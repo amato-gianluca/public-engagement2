@@ -1,0 +1,31 @@
+/* 
+		colori standard DEC
+		azzurro
+*/
+.btn-primary, .active:not(.breadcrumb-item):not(.nav-link):not(.tab-pane), .icon, .menu3 ,
+.nav-pills .nav-link.active, .nav-pills .show>.nav-link, .accordion-title, .orie-line {
+  background-color: #306ed8 !important;
+  border-color: #306ed8 !important;
+}
+::selection, ::-moz-selection {
+  background: #306ed8;
+  color: #ffffff;
+}
+a:hover, #contact a:hover, .navbar-collapse a.nav-link:hover, .navbar-collapse a.nav-link.active,
+.block-menu-block.block-menu-block-6 ul.menu li:before, .block ul.menu li:before, .block ul.page-box-list li.leaf:before,
+.accordion .fa{
+  color: #306ed8!important;
+}
+.nav-menu {
+  border-bottom-color: #306ed8;
+}
+
+a.btn {
+  color: #ffffff;
+}
+
+.btn-primary:hover, .btn-primary:active, .btn-primary:focus{
+  background-color: #002d7a!important;
+  color: #ffffff!important;
+  background-image: none!important;
+}
