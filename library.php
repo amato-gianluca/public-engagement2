@@ -88,7 +88,11 @@ function iris_get_docenti($search, $limit=20) {
     foreach ($results as &$author) {
         $matricola = iris_crisId_to_matricola($author['crisId']);
         $esse3_author = esse3_get_author_by_matricola($matricola);
-        $author['name'] = $esse3_author['COGNOME'] . ' ' .  $esse3_author['NOME'];
+        if ($esse3_author) {
+            $author['name'] = $esse3_author['COGNOME'] . ' ' .  $esse3_author['NOME'];
+        } else {
+            $author['name'] = '---> ' . $matricola. ' ' .$author['name'];
+        }
     }
     return $results;
 }
