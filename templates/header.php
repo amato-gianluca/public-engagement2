@@ -97,7 +97,7 @@
                         </a>
                         <a class="navbar-brand" href="index.php">
                             <!--<img src="images/lingue-logo.jpg" width="50" class="img-fluid py-2 ml-3" alt="logo Dipartimento">-->
-                            <span class="navbar-text ml-1 mb-2">PUBLIC ENGAGEMENT</span>
+                            <span class="navbar-text ml-1 mb-2">CATALOGO DELLE COMPETENZE</span>
                         </a>
                         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation"> <span
                                 class="navbar-toggler-icon"></span> </button>
@@ -112,9 +112,7 @@
                                 else {
                                     echo '<li class="nav-item"> <a class="nav-link" href="logout.php">Logout</a> </li>';
                                 }
-
                                 ?>
-
                             </ul>
                         </div>
                     </nav>

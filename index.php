@@ -15,8 +15,7 @@ require_once 'templates/header.php';
 <div class="section" style="border-bottom: 1px solid #ccc;">
     <div class="container">
         <div class="section-title">
-            <h2 style="text-align: center;">Censimento delle attività di</h2>
-                <h1 style="text-align: center;">Public Engagement</h1>
+            <h2 style="text-align: center;">Catalogo delle competenze</h2>
         </div>
 
         <p class="h2">Filtri per la ricerca</p>
