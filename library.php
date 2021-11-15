@@ -1,9 +1,9 @@
 <?php
-if (DEBUG) {
-    ini_set('error_reporting', true);
-    error_reporting(E_ALL | E_STRICT);
-}
+set_error_handler('error_handler');
+set_exception_handler('exception_handler');
+error_reporting(E_ALL | E_STRICT);
 
+ob_start();
 session_name('uda-competenze');
 session_start();
 
@@ -13,11 +13,80 @@ try {
     $esse3 = new PDO(ESSE3_DSN, ESSE3_USERNAME, ESSE3_PASSWORD,
         [ PDO::MYSQL_ATTR_SSL_CA =>  __DIR__ . '/ca_esse3.pem' ]);
 } catch (PDOException $e) {
-    die('MySQL Connection failed: ' . $e->getMessage());
+    die('MySQL Connection to ESSE3 failed: ' . $e->getMessage());
+}
+
+try {
+    $pe = new PDO(PE_DNS, PE_USERNAME, PE_PASSWORD);
+} catch (PDOException $e) {
+    die('MySQL Connection to PE failed: ' . $e->getMessage());
 }
 
 $iris_dsn = 'mongodb://'.rawurlencode(IRIS_USERNAME).':'.rawurlencode(IRIS_PASSWORD).'@'.rawurlencode(IRIS_HOST);
 $iris = (new MongoDB\Client($iris_dsn))->iris;
+
+function h($text) {
+    return htmlspecialchars($text);
+}
+
+function map_error_code ($errno) {
+    $error = $log = null;
+    switch ($errno) {
+        case E_PARSE:
+        case E_ERROR:
+        case E_CORE_ERROR:
+        case E_COMPILE_ERROR:
+        case E_USER_ERROR:
+            $error = 'Fatal Error';
+            break;
+        case E_WARNING:
+        case E_USER_WARNING:
+        case E_COMPILE_WARNING:
+        case E_RECOVERABLE_ERROR:
+            $error = 'Warning';
+            break;
+        case E_NOTICE:
+        case E_USER_NOTICE:
+            $error = 'Notice';
+            break;
+        case E_STRICT:
+            $error = 'Strict';
+            break;
+        case E_DEPRECATED:
+        case E_USER_DEPRECATED:
+            $error = 'Deprecated';
+            break;
+        default :
+            break;
+    }
+    return $error;
+}
+
+function exception_handler($ex) {
+    ob_clean();
+    if (DEBUG) { ?>
+        <b>Uncaught exception</b>
+        <pre><?= $ex ?></pre>
+    <?php } else { ?>
+        Si è verificato un errore. Contatta lo sviluppatore del sofware.
+    <?php }
+    die();
+}
+
+function error_handler($errno, $errstr, $errfile, $errline) {
+    //if (($errno & error_reporting()) == 0) return;
+    ob_clean();
+    if (DEBUG) {
+        $errstr = htmlspecialchars($errstr);
+    ?>
+        <b><?= map_error_code($errno) ?>:</b> <?= $errstr ?> in <?= $errfile ?> on line <?= $errline ?>
+        <br>
+        <pre><?php debug_print_backtrace(); ?></pre>
+    <?php } else { ?>
+        Si è verificato un errore. Contatta lo sviluppatore del sofware.
+    <?php }
+    die();
+}
 
 function esse3_get_docenti($dip_id = '031313') {
     global $esse3;
@@ -49,6 +118,14 @@ function esse3_get_authors_by_matricole($matricole) {
     return $query->fetchAll();
 }
 
+function esse3_get_cv_by_matricola($matricola) {
+    global $esse3;
+
+    $query = $esse3 -> prepare('SELECT * FROM CV_PERSONE WHERE MATRICOLA = ?');
+    $result = $query -> execute([$matricola]);
+    return $query->fetch();
+}
+
 function iris_crisId_to_matricola($crisId) {
     global $iris;
 
@@ -59,6 +136,25 @@ function iris_crisId_to_matricola($crisId) {
             return $source['sourceId'];
     }
     return null;
+}
+
+function iris_matricola_to_crisId($username) {
+    global $iris;
+    $author = $iris->authors->findOne(['gaSourceIdentifiers.sourceId' => $username], ['projection' => ['crisId' => 1]]);
+    return $author['crisId'];
+}
+
+function iris_get_paper_from_crisId($crisId) {
+    global $iris;
+    $items = $iris->items->find(['internalAuthors.authority' => $crisId, 'lookupValues.year' => [ '$gte' => strval(2015) ]]);
+    return $items;
+}
+
+function iris_format_paper($paper) {
+    return <<<DOC
+        {$paper['lookupValues']['title']}<br>
+        {$paper['lookupValues']['year']}
+    DOC;
 }
 
 function iris_get_docenti($search, $limit=20) {
@@ -96,4 +192,17 @@ function iris_get_docenti($search, $limit=20) {
     }
     return $results;
 }
-?>
+
+function pe_get_researcher($username) {
+    global $pe;
+    $query = $pe -> prepare('SELECT * FROM researchers WHERE username = ?');
+    $result = $query -> execute([$username]);
+    return $query -> fetch();
+}
+
+function pe_create_researcher($username) {
+    global $pe;
+    $query = $pe -> prepare('INSERT INTO researchers (username) VALUES (?)');
+    $result = $query -> execute([$username]);
+    return $result;
+}

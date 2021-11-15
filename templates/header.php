@@ -19,7 +19,7 @@
     <!-- Owl carousel -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css" integrity="sha512-tS3S5qG0BlhnQROyJXvNjeEM4UpMXHrQfTGmbQ1gKmelCxlSEBUaxhRBj/EFTzpbP4RVSrpEikbmdJobCvhE3g==" crossorigin="anonymous" referrerpolicy="no-referrer" />    <!-- Main css -->
     <link href="css/style.css" rel="stylesheet">
-    <link href="css/orientamento.css" rel="stylesheet">
+    <link href="css/pe.css" rel="stylesheet">
     <link href="css/custom/style_color0.css" rel="stylesheet">
     <!--font awesome-->
     <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">-->
@@ -104,10 +104,11 @@
                         <div class="collapse navbar-collapse text-center" id="navbar">
                             <ul class="navbar-nav ml-auto">
                                 <li class="nav-item"> <a class="nav-link active" href="index.php">Home</a></li>
-                                <li class="nav-item"> <a class="nav-link" href="alphabetic.php">Alphabetic Index</a></li>
+                                <li class="nav-item"> <a class="nav-link" href="alphabetic.php">Indice parole chiave</a></li>
                                 <?php if (!isset($_SESSION['username'])) { ?>
                                 <li class="nav-item"> <a class="nav-link" href="login.php">Login</a></li>
                                 <?php } else { ?>
+                                <li class="nav-item"> <a class="nav-link" href="edit.php">Modifica dati personali</a></li>
                                 <li class="nav-item"> <a class="nav-link" href="logout.php">Logout</a></li>
                                 <?php } ?>
                             </ul>

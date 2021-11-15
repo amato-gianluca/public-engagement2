@@ -1,0 +1,22 @@
+.researchertable {
+  height: 100%;
+}
+
+.researchertable tbody tr {
+  height: 100%;
+}
+.researchertable tbody tr th .rowtitle {
+  font-variant: small-caps;
+}
+
+.researchertable tbody tr td {
+  padding: 0;
+}
+
+.researchertable tbody tr td textarea {
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  min-width: 100%;
+  min-height: 100%;
+}
