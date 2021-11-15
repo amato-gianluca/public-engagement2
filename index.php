@@ -3,7 +3,7 @@ require_once 'config.php';
 require_once 'library.php';
 require_once 'templates/header.php';
 ?>
-<section class="header6" style="height: 300px; background-image: url('images/home.png'); background-size: cover; background-position: center;">
+<section class="header6" style="height: 100px; background-image: url('images/home.png'); background-size: cover; background-position: center;">
     <div class="container">
         <div class="row justify-content-md-center">
             <div class="mbr-white col-md-10">
