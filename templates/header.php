@@ -97,22 +97,19 @@
                         </a>
                         <a class="navbar-brand" href="index.php">
                             <!--<img src="images/lingue-logo.jpg" width="50" class="img-fluid py-2 ml-3" alt="logo Dipartimento">-->
-                            <span class="navbar-text ml-1 mb-2">CATALOGO DELLE COMPETENZE</span>
+                            <span class="navbar-text ml-1 mb-2">COMPETENZE</span>
                         </a>
                         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation"> <span
                                 class="navbar-toggler-icon"></span> </button>
                         <div class="collapse navbar-collapse text-center" id="navbar">
                             <ul class="navbar-nav ml-auto">
-                                <li class="nav-item"> <a class="nav-link active" href="index.php">HOME</a></li>
-                                <li class="nav-item"> <a class="nav-link" href="alphabetic.php">ALPHABETIC INDEX</a></li>
-                                <?php
-                                if( !isset($_SESSION["matricola"]) ){
-                                    echo '<li class="nav-item"> <a class="nav-link" href="#">Login</a> </li>';
-                                }
-                                else {
-                                    echo '<li class="nav-item"> <a class="nav-link" href="logout.php">Logout</a> </li>';
-                                }
-                                ?>
+                                <li class="nav-item"> <a class="nav-link active" href="index.php">Home</a></li>
+                                <li class="nav-item"> <a class="nav-link" href="alphabetic.php">Alphabetic Index</a></li>
+                                <?php if (!isset($_SESSION['username'])) { ?>
+                                <li class="nav-item"> <a class="nav-link" href="login.php">Login</a></li>
+                                <?php } else { ?>
+                                <li class="nav-item"> <a class="nav-link" href="logout.php">Logout</a></li>
+                                <?php } ?>
                             </ul>
                         </div>
                     </nav>
