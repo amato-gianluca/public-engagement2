@@ -4,7 +4,7 @@ if (DEBUG) {
     error_reporting(E_ALL | E_STRICT);
 }
 
-session_name('public-engagement');
+session_name('uda-competenze');
 session_start();
 
 require_once __DIR__ . '/vendor/autoload.php';
