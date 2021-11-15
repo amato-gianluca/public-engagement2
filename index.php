@@ -39,6 +39,6 @@ require_once 'templates/header.php';
     $('#searchterms').on('input',searchterms_change_listener);
     $('#searchterms').trigger('input');
 </script>
-<?
+<?php
 require_once("templates/footer.php");
 ?>
