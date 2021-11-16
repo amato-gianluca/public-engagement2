@@ -9,7 +9,15 @@ if (!isset($_SESSION['username'])) {
 $username = $_SESSION['username'];
 
 if (isset($_POST['edit'])) {
-    $result = pe_edit_researcher($username, $_POST);
+    $keywords_en = $_POST['keywords_en'] ? array_map(
+        function($tag) { return $tag->value; },
+        json_decode($_POST['keywords_en'])
+    ) : [];
+    $keywords_it = $_POST['keywords_it'] ? array_map(
+        function($tag) { return $tag->value; },
+        json_decode($_POST['keywords_it'])
+    ) : [];
+    $result = pe_edit_researcher($username, $keywords_en, $keywords_it, $_POST);
     if (! $result) trigger_error('Problem updating user info');
     $_SESSION['flash'] = 'Dati modificati con successo';
     redirect_browser('edit.php');
@@ -62,12 +70,6 @@ require_once 'templates/header.php';
             unset($_SESSION['flash']);
         } ?>
 
-        <script>
-        $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
-            $("#success-alert").slideUp(500);
-        });
-        </script>
-
         <form action="edit.php" method="POST">
 
         <div class="row">
@@ -99,10 +101,10 @@ require_once 'templates/header.php';
                             <span lang="it">(ogni keyword, singola o composta, va separata dalle altre usando il punto e virgola)</span>
                         </th>
                         <td>
-                            <textarea id="keywords_en" name="keywords_en" lang="en" title="keywords in english" rows="2" ><?= h($pe_user['keywords_en']) ?></textarea>
+                            <textarea id="keywords_en" name="keywords_en" lang="en" title="keywords in english" rows="2" ><?= h(list_to_tagify($pe_user['keywords_en'])) ?></textarea>
                         </td>
                         <td>
-                            <textarea id="keywords_it" name="keywords_it" lang="it" title="parole chiavi in italiano" rows="2" ><?= h($pe_user['keywords_it']) ?></textarea>
+                            <textarea id="keywords_it" name="keywords_it" lang="it" title="parole chiavi in italiano" rows="2" ><?= h(list_to_tagify($pe_user['keywords_it'])) ?></textarea>
                         </td>
                     </tr>
                     <tr>
@@ -186,6 +188,8 @@ require_once 'templates/header.php';
     </div>
 </div>
 
+
+<script src="js/edit.js"></script>
 
 <?php
 require_once("templates/footer.php");

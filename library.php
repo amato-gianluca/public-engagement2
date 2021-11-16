@@ -29,6 +29,11 @@ function h($text) {
     return htmlspecialchars($text);
 }
 
+function redirect_browser($url) {
+    header("Location: $url");
+    die();
+}
+
 function map_error_code ($errno) {
     $error = $log = null;
     switch ($errno) {
@@ -209,7 +214,30 @@ function pe_get_researcher($username) {
     global $pe;
     $query = $pe -> prepare('SELECT * FROM researchers WHERE username = ?');
     $result = $query -> execute([$username]);
-    return $query -> fetch();
+    $data = $query -> fetch(PDO::FETCH_ASSOC);
+
+    $query = $pe -> prepare(<<<SQL
+        SELECT *
+        FROM researcher_keywords rk JOIN keywords k ON rk.id_keyword = k.id
+        WHERE rk.id_researcher = ?
+        ORDER BY pos;
+    SQL);
+    $result = $query -> execute([$data['id']]);
+    $keywords = $query -> fetchAll(PDO::FETCH_ASSOC);
+
+    $keywords_en = array_map(
+        function ($keyword) { return $keyword['keyword']; },
+        array_filter($keywords, function ($keyword) { return $keyword['lang'] == 'en'; })
+    );
+    $keywords_it = array_map(
+        function ($keyword) { return $keyword['keyword']; },
+        array_filter($keywords, function ($keyword) { return $keyword['lang'] == 'it'; })
+    );
+
+    $data['keywords_en'] = $keywords_en;
+    $data['keywords_it'] = $keywords_it;
+
+    return $data;
 }
 
 function pe_create_researcher($username) {
@@ -219,9 +247,39 @@ function pe_create_researcher($username) {
     return $result;
 }
 
-function pe_edit_researcher($username, $data) {
+function pe_get_researcher_id($username) {
+    global $pe;
+    $query = $pe -> prepare('SELECT * FROM researchers WHERE username = ?');
+    $result = $query -> execute([$username]);
+    return $query -> fetch() ['id'];
+}
+
+function pe_get_keyword_id($keyword, $lang) {
+    global $pe;
+    $query = $pe -> prepare('SELECT id FROM keywords WHERE keyword = ? AND lang = ?');
+    $result = $query -> execute([$keyword, $lang]);
+    $value = $query -> fetch();
+    return $value ? $value['id'] : null;
+}
+
+function pe_add_keyword($keyword, $lang) {
+    global $pe;
+    $query = $pe -> prepare('INSERT INTO keywords (keyword, lang) VALUES (?, ?)');
+    $result = $query -> execute([$keyword, $lang]);
+    return $pe -> lastInsertId();
+}
+
+function pe_associate_researcher_keyword($researcher_id, $keyword_id, $pos) {
+    global $pe;
+    $query = $pe -> prepare('INSERT INTO researcher_keywords VALUES (?, ?, ?)');
+    $result = $query -> execute([$researcher_id, $keyword_id, $pos]);
+    return $result;
+}
+
+function pe_edit_researcher($username, $keywords_en, $keywords_it, $data) {
     global $pe;
 
+    $researcher_id = pe_get_researcher_id($username);
     $query = $pe -> prepare(<<<SQL
         UPDATE researchers
         SET
@@ -235,17 +293,38 @@ function pe_edit_researcher($username, $data) {
             demerging_it = ?,
             awards_it = ?,
             curriculum_it = ?
-        WHERE username = ?
+        WHERE id = ?
     SQL);
+
     $result = $query -> execute([
-        $data['keywords_en'], $data['interests_en'], $data['demerging_en'], $data['awards_en'], $data['curriculum_en'],
-        $data['keywords_it'], $data['interests_it'], $data['demerging_it'], $data['awards_it'], $data['curriculum_it'],
-        $username
+        join(' ',$keywords_en), $data['interests_en'], $data['demerging_en'], $data['awards_en'], $data['curriculum_en'],
+        join(' ',$keywords_it), $data['interests_it'], $data['demerging_it'], $data['awards_it'], $data['curriculum_it'],
+        $researcher_id
     ]);
-    return $result;
+
+    $query = $pe -> prepare(<<<SQL
+        DELETE FROM researcher_keywords WHERE id_researcher = ?
+    SQL);
+    $result = $query -> execute([$researcher_id]);
+
+    foreach ($keywords_en as $pos => $keyword) {
+        $keyword_id = pe_get_keyword_id($keyword, 'en') ?? pe_add_keyword($keyword, 'en');
+        pe_associate_researcher_keyword($researcher_id, $keyword_id, $pos);
+    }
+
+    foreach ($keywords_it as $pos => $keyword) {
+        $keyword_id = pe_get_keyword_id($keyword, 'it') ?? pe_add_keyword($keyword, 'it');
+        pe_associate_researcher_keyword($researcher_id, $keyword_id, $pos);
+    }
+
+    return true;
 }
 
-function redirect_browser($url) {
-    header("Location: $url");
-    die();
+function list_to_tagify($list) {
+    $tags = [];
+    foreach ($list as $item) {
+        $obj = [ 'value' => $item ];
+        $tags[] = $obj;
+    }
+    return json_encode($tags);
 }
