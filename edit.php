@@ -3,20 +3,28 @@ require_once 'config.php';
 require_once 'library.php';
 
 if (!isset($_SESSION['username'])) {
-    header('Location: login.php?tgt=edit');
-    die();
+    redirect_browser('login.php?tgt=edit');
 }
 
-$esse3_user = esse3_get_author_by_matricola($_SESSION['username']);
-$esse3_cv = esse3_get_cv_by_matricola($_SESSION['username']);
-$pe_user = pe_get_researcher($_SESSION['username']);
-$iris_username = iris_matricola_to_crisId($_SESSION['username']);
+$username = $_SESSION['username'];
+
+if (isset($_POST['edit'])) {
+    $result = pe_edit_researcher($username, $_POST);
+    if (! $result) trigger_error('Problem updating user info');
+    $_SESSION['flash'] = 'Dati modificati con successo';
+    redirect_browser('edit.php');
+}
+
+$esse3_user = esse3_get_author_by_matricola($username);
+$esse3_cv = esse3_get_cv_by_matricola($username);
+$pe_user = pe_get_researcher($username);
+$iris_username = iris_matricola_to_crisId($username);
 $iris_papers = iris_get_paper_from_crisId($iris_username);
 
 if (! $pe_user) {
     // Here we need to ask the user if he want to be part of the site.
-    if (pe_create_researcher($_SESSION['username'])) {
-        $pe_user = pe_get_researcher($_SESSION['username']);
+    if (pe_create_researcher($username)) {
+        $pe_user = pe_get_researcher($username);
         if (! $pe_user) trigger_error('Problem creating new user #2');
     } else {
         trigger_error('Problem creating new user #1');
@@ -35,6 +43,7 @@ require_once 'templates/header.php';
     </div>
 </section>
 
+
 <div class="section" style="border-bottom: 1px solid #ccc;">
     <div class="container">
         <div class="section-title">
@@ -43,6 +52,20 @@ require_once 'templates/header.php';
         <div class="mb-5">
             <h2 style="text-align: center;">Modifica dati ricercatore</h2>
         </div>
+
+        <?php if (isset($_SESSION['flash'])) { ?>
+            <div id="success-alert" class="alert alert-primary fade" role="alert">
+            <strong><?= $_SESSION['flash'] ?>
+            </div>
+            <?php
+            unset($_SESSION['flash']);
+        } ?>
+
+        <script>
+        $("#success-alert").fadeTo(2000, 500).slideUp(500, function(){
+            $("#success-alert").slideUp(500);
+        });
+        </script>
 
         <form action="edit.php" method="POST">
 
@@ -53,7 +76,7 @@ require_once 'templates/header.php';
             <div class="col-md-4 text-right">
                 <div class="form-group">
                     <button type="reset" class="btn btn-primary">Annulla modifiche</button>
-                    <button type="submit" class="btn btn-default">Modifica</button>
+                    <button type="submit" name="edit" class="btn btn-default">Modifica</button>
                 </div>
             </div>
         </div>
@@ -128,10 +151,10 @@ require_once 'templates/header.php';
                             <span class="rowtitle">Present Position</span><br>
                         </th>
                         <td>
-                            <textarea id="position_en" name="position_en" lang="en">###</textarea>
+                            <textarea id="position_en" lang="en">###</textarea>
                         </td>
                         <td>
-                            <textarea id="position_it" name="position_it" lang="it">###</textarea>
+                            <textarea id="position_it" lang="it">###</textarea>
                         </td>
                     </tr>
                     <tr>
@@ -170,6 +193,7 @@ require_once 'templates/header.php';
         </form>
     </div>
 </div>
+
 
 <?php
 require_once("templates/footer.php");

@@ -7,8 +7,7 @@ if (!DEBUG) die();
 if (isset($_GET['username'])) {
     $_SESSION['username'] = $_GET['username'];
     $target = ($_GET['tgt'] ?? '') == 'edit' ? 'edit.php' : '.';
-    header("Location: $target");
-    die();
+    redirect_browser($target);
 }
 
 require_once 'templates/header.php';

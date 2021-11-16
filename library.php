@@ -210,3 +210,34 @@ function pe_create_researcher($username) {
     $result = $query -> execute([$username]);
     return $result;
 }
+
+function pe_edit_researcher($username, $data) {
+    global $pe;
+
+    $query = $pe -> prepare(<<<SQL
+        UPDATE researchers
+        SET
+            keywords_en = ?,
+            interests_en = ?,
+            demerging_en = ?,
+            awards_en = ?,
+            curriculum_en = ?,
+            keywords_it = ?,
+            interests_it = ?,
+            demerging_it = ?,
+            awards_it = ?,
+            curriculum_it = ?
+        WHERE username = ?
+    SQL);
+    $result = $query -> execute([
+        $data['keywords_en'], $data['interests_en'], $data['demerging_en'], $data['awards_en'], $data['curriculum_en'],
+        $data['keywords_it'], $data['interests_it'], $data['demerging_it'], $data['awards_it'], $data['curriculum_it'],
+        $username
+    ]);
+    return $result;
+}
+
+function redirect_browser($url) {
+    header("Location: $url");
+    die();
+}
