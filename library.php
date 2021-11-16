@@ -126,6 +126,14 @@ function esse3_get_cv_by_matricola($matricola) {
     return $query->fetch();
 }
 
+function esse3_get_role_by_matricola($matricola) {
+    global $esse3;
+
+    $query = $esse3 -> prepare('SELECT * FROM V_IE_RU_PERS_ATTIVO WHERE MATRICOLA = ?');
+    $result = $query -> execute([$matricola]);
+    return $query->fetch();
+}
+
 function iris_crisId_to_matricola($crisId) {
     global $iris;
 
