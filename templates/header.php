@@ -40,8 +40,9 @@
         })
     </script>
     <!--tagify per autocompletamento-->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tagify/3.14.3/tagify.min.css" integrity="sha512-X5fWtpYG9gzu0ACyXMuZ1gRu2akvZAYUReB0R/+GENYgfupzS1igi+dqcs8ASA0USe+LuxE9HP5KSQn1hjRpfg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tagify/3.14.3/tagify.min.js" integrity="sha512-3hT+rZjTbv5TVm3gn27XdpNRNVYDVyvrn+cBluquJZ2LqPHcQGEVKp6IR/aUIJfu5yTyxMwdO19uiaKAWAWbdg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script></head>
+    <script src="https://unpkg.com/@yaireo/tagify"></script>
+    <script src="https://unpkg.com/@yaireo/tagify/dist/tagify.polyfills.min.js"></script>
+    <link href="https://unpkg.com/@yaireo/tagify/dist/tagify.css" rel="stylesheet" type="text/css" />
     <!-- JS library for this application -->
     <script src="js/library.js"></script>
 

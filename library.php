@@ -269,6 +269,15 @@ function pe_add_keyword($keyword, $lang) {
     return $pe -> lastInsertId();
 }
 
+function pe_get_keywords($lang, $prefix = '') {
+    global $pe;
+    $query = $pe -> prepare('SELECT keyword FROM keywords WHERE lang = ? AND keyword LIKE ? ORDER BY keyword ASC');
+    $escapedprefix = addcslashes($prefix, '%_');
+    $result = $query -> execute([$lang, $escapedprefix . '%']);
+    $data = $query -> fetchAll();
+    return array_map(function ($keyword) { return $keyword['keyword']; }, $data);
+}
+
 function pe_associate_researcher_keyword($researcher_id, $keyword_id, $pos) {
     global $pe;
     $query = $pe -> prepare('INSERT INTO researcher_keywords VALUES (?, ?, ?)');

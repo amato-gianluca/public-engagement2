@@ -101,10 +101,10 @@ require_once 'templates/header.php';
                             <span lang="it">(ogni keyword, singola o composta, va separata dalle altre usando il punto e virgola)</span>
                         </th>
                         <td>
-                            <textarea id="keywords_en" name="keywords_en" lang="en" title="keywords in english" rows="2" ><?= h(list_to_tagify($pe_user['keywords_en'])) ?></textarea>
+                            <input type="text" id="keywords_en" name="keywords_en" lang="en" title="keywords in english" value="<?= h(list_to_tagify($pe_user['keywords_en'])) ?>">
                         </td>
                         <td>
-                            <textarea id="keywords_it" name="keywords_it" lang="it" title="parole chiavi in italiano" rows="2" ><?= h(list_to_tagify($pe_user['keywords_it'])) ?></textarea>
+                            <input type="text" id="keywords_it" name="keywords_it" lang="it" title="parole chiavi in italiano" value="<?= h(list_to_tagify($pe_user['keywords_it'])) ?>">
                         </td>
                     </tr>
                     <tr>
