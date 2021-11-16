@@ -151,9 +151,13 @@ function iris_get_paper_from_crisId($crisId) {
 }
 
 function iris_format_paper($paper) {
+    $l = $paper['lookupValues'];
+    $appeared = $paper['collection']['id']== 23 ? "in {$l['book']}, " : '';
     return <<<DOC
-        {$paper['lookupValues']['title']}<br>
-        {$paper['lookupValues']['year']}
+        {$l['contributors']}<br>
+        <i>{$l['title']}</i><br>
+        $appeared
+        {$l['year']}
     DOC;
 }
 
