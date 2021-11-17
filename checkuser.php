@@ -18,6 +18,7 @@ if (! $userid) {
 }
 
 if ($userid) {
+    unset($_SESSION['username']);
     $_SESSION['userid'] = $userid;
     $target = ($_GET['tgt'] ?? '') == 'edit' ? 'edit.php' : '.';
     redirect_browser($target);

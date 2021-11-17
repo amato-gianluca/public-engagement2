@@ -13,11 +13,9 @@ require_once 'templates/header.php';
 ?>
 <div class="section" style="border-bottom: 1px solid #ccc;">
     <div class="container">
-            <div class="section-title">
-                <h2 style="text-align: center;">Catalogo delle competenze</h2>
+            <div class="mb-5">
+                <h2 style="text-align: center;">Login</h2>
             </div>
-
-            <p class="h2">Login</p>
 
             <form action="<?= $_SERVER['PHP_SELF'] ?>">
                 <div class="mb-3">
@@ -34,7 +32,6 @@ require_once 'templates/header.php';
                 <input type="hidden" name="tgt" value="<?= $_GET['tgt'] ?? '' ?>">
                 <button type="submit" class="btn btn-primary">Login</button>
             </form>
-
         </div>
     </div>
 </div>

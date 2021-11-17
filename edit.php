@@ -6,7 +6,6 @@ if (!isset($_SESSION['userid'])) {
     redirect_browser('login.php?tgt=edit');
 }
 
-$username = $_SESSION['username'];
 $userid = $_SESSION['userid'];
 
 if (isset($_POST['edit'])) {
@@ -20,16 +19,19 @@ if (isset($_POST['edit'])) {
     ) : [];
     $result = pe_edit_researcher($userid, $keywords_en, $keywords_it, $_POST);
     if (! $result) trigger_error('Problem updating user info');
-    $_SESSION['flash'] = 'Dati modificati con successo';
+    $_SESSION['flash'] = 'Dati salvati con successo';
     redirect_browser('edit.php');
 }
 
+$pe_user = pe_get_researcher($userid);
+
+$username = $pe_user['username'];
 $esse3_user = esse3_get_author_by_matricola($username);
 $esse3_cv = esse3_get_cv_by_matricola($username);
 $esse3_role = esse3_get_role_by_matricola($username);
+
 $iris_username = iris_matricola_to_crisId($username);
 $iris_papers = iris_get_paper_from_crisId($iris_username);
-$pe_user = pe_get_researcher($userid);
 
 if (! $pe_user) {
     // Here we need to ask the user if he want to be part of the site.
@@ -44,23 +46,10 @@ if (! $pe_user) {
 require_once 'templates/header.php';
 ?>
 
-<section class="header6" style="height: 100px; background-image: url('images/home.png'); background-size: cover; background-position: center;">
-    <div class="container">
-        <div class="row justify-content-md-center">
-            <div class="mbr-white col-md-10">
-            </div>
-        </div>
-    </div>
-</section>
-
-
 <div class="section" style="border-bottom: 1px solid #ccc;">
     <div class="container">
-        <div class="section-title">
-            <h1 style="text-align: center;">Catalogo delle competenze</h1>
-        </div>
         <div class="mb-5">
-            <h2 style="text-align: center;">Modifica dati ricercatore</h2>
+            <h2 style="text-align: center;">Modifica competenze</h2>
         </div>
 
         <?php if (isset($_SESSION['flash'])) { ?>
@@ -82,7 +71,7 @@ require_once 'templates/header.php';
             <div class="col-md-4 text-end">
                 <div class="form-group">
                     <button type="reset" class="btn btn-secondary">Annulla modifiche</button>
-                    <button type="submit" name="edit" class="btn btn-primary">Modifica</button>
+                    <button type="submit" name="edit" class="btn btn-primary">Salva</button>
                 </div>
             </div>
         </div>

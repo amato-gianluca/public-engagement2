@@ -3,22 +3,12 @@ require_once 'config.php';
 require_once 'library.php';
 require_once 'templates/header.php';
 ?>
-<section class="header6" style="height: 100px; background-image: url('images/home.png'); background-size: cover; background-position: center;">
-    <div class="container">
-        <div class="row justify-content-md-center">
-            <div class="mbr-white col-md-10">
-            </div>
-        </div>
-    </div>
-</section>
 
 <div class="section" style="border-bottom: 1px solid #ccc;">
     <div class="container">
-        <div class="section-title">
-            <h2 style="text-align: center;">Catalogo delle competenze</h2>
+        <div class="mb-5">
+            <h2 style="text-align: center;">Ricerca competenze</h2>
         </div>
-
-        <p class="h2">Filtri per la ricerca</p>
 
         <div class="mb-3">
             <label for="searchterms" class="form-label">Ricerca libera del testo</label>

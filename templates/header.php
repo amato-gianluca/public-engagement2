@@ -106,10 +106,8 @@
                             <ul class="navbar-nav ml-auto">
                                 <li class="nav-item"> <a class="nav-link active" href="index.php">Home</a></li>
                                 <li class="nav-item"> <a class="nav-link" href="alphabetic.php">Indice parole chiave</a></li>
-                                <?php if (!isset($_SESSION['username'])) { ?>
-                                <li class="nav-item"> <a class="nav-link" href="login.php">Login</a></li>
-                                <?php } else { ?>
-                                <li class="nav-item"> <a class="nav-link" href="edit.php">Modifica dati personali</a></li>
+                                <li class="nav-item"> <a class="nav-link" href="edit.php">Modifica competenze</a></li>
+                                <?php if (isset($_SESSION['userid'])) { ?>
                                 <li class="nav-item"> <a class="nav-link" href="logout.php">Logout</a></li>
                                 <?php } ?>
                             </ul>
@@ -119,3 +117,20 @@
             </div>
         </div>
     </div>
+
+    <section class="header6" style="height: 100px; background-image: url('images/home.png'); background-size: cover; background-position: center;">
+        <div class="container">
+            <div class="row justify-content-md-center">
+                <div class="mbr-white col-md-10">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="container">
+            <div class="section-title">
+                <h1 style="text-align: center;">Catalogo delle competenze</h2>
+            </div>
+        </div>
+    </section>
