@@ -2,11 +2,12 @@
 require_once 'config.php';
 require_once 'library.php';
 
-if (!isset($_SESSION['username'])) {
+if (!isset($_SESSION['userid'])) {
     redirect_browser('login.php?tgt=edit');
 }
 
 $username = $_SESSION['username'];
+$userid = $_SESSION['userid'];
 
 if (isset($_POST['edit'])) {
     $keywords_en = $_POST['keywords_en'] ? array_map(
@@ -17,7 +18,7 @@ if (isset($_POST['edit'])) {
         function($tag) { return $tag->value; },
         json_decode($_POST['keywords_it'])
     ) : [];
-    $result = pe_edit_researcher($username, $keywords_en, $keywords_it, $_POST);
+    $result = pe_edit_researcher($userid, $keywords_en, $keywords_it, $_POST);
     if (! $result) trigger_error('Problem updating user info');
     $_SESSION['flash'] = 'Dati modificati con successo';
     redirect_browser('edit.php');
@@ -26,9 +27,9 @@ if (isset($_POST['edit'])) {
 $esse3_user = esse3_get_author_by_matricola($username);
 $esse3_cv = esse3_get_cv_by_matricola($username);
 $esse3_role = esse3_get_role_by_matricola($username);
-$pe_user = pe_get_researcher($username);
 $iris_username = iris_matricola_to_crisId($username);
 $iris_papers = iris_get_paper_from_crisId($iris_username);
+$pe_user = pe_get_researcher($userid);
 
 if (! $pe_user) {
     // Here we need to ask the user if he want to be part of the site.

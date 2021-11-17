@@ -6,8 +6,7 @@ if (!DEBUG) die();
 
 if (isset($_GET['username'])) {
     $_SESSION['username'] = $_GET['username'];
-    $target = ($_GET['tgt'] ?? '') == 'edit' ? 'edit.php' : '.';
-    redirect_browser($target);
+    redirect_browser("checkuser.php?tgt=".urlencode($_GET['tgt']));
 }
 
 require_once 'templates/header.php';
