@@ -11,30 +11,25 @@ if (isset($_GET['username'])) {
 
 require_once 'templates/header.php';
 ?>
-<div class="section" style="border-bottom: 1px solid #ccc;">
-    <div class="container">
-            <div class="mb-5">
-                <h2 style="text-align: center;">Login</h2>
-            </div>
-
-            <form action="<?= $_SERVER['PHP_SELF'] ?>">
-                <div class="mb-3">
-                    <label for="username" class="form-label">Inserire matricola utente</label>
-                    <div class="input-group">
-                      <span class="input-group-text" id="basic-addon1">@</span>
-                      <input type="text" class="form-control" name="username" id="username" aria-describedby="username_help">
-                    </div>
-                    <div id="username_help" class="form-text">
-                        Utilizzare la stessa matricola che si utilizza per l'accesso agli altri servizi dell'ateneo
-                        come UdaOnline.
-                    </div>
+                <div class="mb-5">
+                    <h2 class="text-center">Login</h2>
                 </div>
-                <input type="hidden" name="tgt" value="<?= $_GET['tgt'] ?? '' ?>">
-                <button type="submit" class="btn btn-primary">Login</button>
-            </form>
-        </div>
-    </div>
-</div>
+
+                <form action="<?= $_SERVER['PHP_SELF'] ?>">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Inserire matricola utente</label>
+                        <div class="input-group">
+                        <span class="input-group-text" id="basic-addon1">@</span>
+                        <input type="text" class="form-control" name="username" id="username" aria-describedby="username_help">
+                        </div>
+                        <div id="username_help" class="form-text">
+                            Utilizzare la stessa matricola che si utilizza per l'accesso agli altri servizi dell'ateneo
+                            come UdaOnline.
+                        </div>
+                    </div>
+                    <input type="hidden" name="tgt" value="<?= $_GET['tgt'] ?? '' ?>">
+                    <button type="submit" class="btn btn-primary">Login</button>
+                </form>
 
 <?php
 require_once("templates/footer.php");

@@ -7,14 +7,14 @@ Version : 1.0
 Author  : Surjith S M
 URI     : https://surjithctly.in/
 
-Copyright © All rights Reserved 
+Copyright © All rights Reserved
 
 */
 
 
 /*------------------------
 [TABLE OF CONTENTS]
-    
+
 1. GLOBAL STYLES
 2. NAVBAR
 3. HERO
@@ -424,7 +424,7 @@ ul.aggregatore li.views-row h4{
 }
 
 .block-menu-menu-organi-ateneo a:hover{
-	text-decoration: none;	
+	text-decoration: none;
 	color: #159dc3;
 }
 
@@ -468,7 +468,7 @@ ul.aggregatore li.views-row h4{
 .news-archivio li.views-row{
 	margin-bottom: 20px;
 	display: flow-root;
-	
+
 }
 .news-archivio li.views-row:before{
 	content: "\e67c";
@@ -563,7 +563,7 @@ max-width:16.666667%;
 #zone-content-wrapper .grid-9,
 #zone-content-wrapper .grid-10,
 #zone-content-wrapper .grid-12{
-	
+
 position:relative;
 min-height:1px;
 width:100%;
@@ -636,7 +636,7 @@ padding-left:15px;
     z-index: 100;
 }
 /*.navbar-nav{
-	margin-bottom: 10px !important;	
+	margin-bottom: 10px !important;
 }*/
 
 .navbar-nav .nav-link {
@@ -1284,7 +1284,7 @@ header {
   height: auto;
   width: 100%;
   margin-bottom: -4px;
-  
+
   /*idk why but this fix stuff*/
 }
 
@@ -1325,12 +1325,12 @@ header {
     opacity:1;
     background-color:white;
   }
-  
+
   50% {
     opacity:0;
     background-color:rgba(0,0,0,0.90);
   }
-  
+
   100% {
     opacity: 1;
     position:fixed;
@@ -1384,7 +1384,7 @@ header {
 	 font-size: 20px;
 }
 
-#events p.card-title, 
+#events p.card-title,
 #events p.card-subtitle{
 	color: #1e365a !important;
 }
@@ -1459,7 +1459,7 @@ span.ti-email:first-child {
 .navbar-brand {
   padding-top: 0;
   padding-bottom: 0;
-}    
+}
 
 .nav-link{
 	display: inline-block;
@@ -1541,7 +1541,7 @@ border-bottom: none;
 .breadcrumb li a:after {
     /*content: "/";*/
     color: #868e96 !important;
-    margin: 0 .5em; 
+    margin: 0 .5em;
 }
 
 /*MENU PRINCIPALE */
@@ -1584,18 +1584,18 @@ border-bottom: none;
 .menu li#bt_ateneo{
 	background-image: url("/sites/all/themes/unichfed/images/home/ateneo.png") !important;
 	background-repeat: no-repeat;
-	background-position: center; 
+	background-position: center;
 	background-size: cover;
 	display: flex !important;
 	align-items: center;
 	justify-content: center;
-	
+
 }
 
 .menu li#bt_didattica{
 	background-image: url("/sites/all/themes/unichfed/images/home/didattica.png") !important;
 	background-repeat: no-repeat;
-	background-position: center; 
+	background-position: center;
 	background-size: cover;
 	display: flex !important;
 	align-items: center;
@@ -1605,7 +1605,7 @@ border-bottom: none;
 .menu li#bt_ricerca{
 	background-image: url("/sites/all/themes/unichfed/images/home/ricerca.png") !important;
 	background-repeat: no-repeat;
-	background-position: center; 
+	background-position: center;
 	background-size: cover;
 	display: flex !important;
 	align-items: center;
@@ -1615,7 +1615,7 @@ border-bottom: none;
 .menu li#bt_campus{
 	background-image: url("/sites/all/themes/unichfed/images/home/campus.png") !important;
 	background-repeat: no-repeat;
-	background-position: center; 
+	background-position: center;
 	background-size: cover;
 	display: flex !important;
 	align-items: center;
@@ -1630,18 +1630,18 @@ border-bottom: none;
 	font-size: 45px;
 	font-weight: 300;
 	letter-spacing: -1px;
-	color: #fff;    
+	color: #fff;
 	display: flex;
  	text-align: center;
  	text-shadow: 1px 1px 5px #676666;
 
-  justify-content: center!important; 
+  justify-content: center!important;
 /* 	position: absolute;
  	width: 25%;*/
  	position: relative;
  	width: 100%;
  	padding: 1.25rem;
- 	    
+
 }
 
 
@@ -1671,7 +1671,7 @@ text-decoration: none;
 	width: 100%;
 	display: block;
 	font-weight: normal;
-	margin-bottom: 20px;	
+	margin-bottom: 20px;
 }
 .menu-box-aggiuntivo ul.menu li a:hover:before {
 	color: #159dc3;
@@ -1707,7 +1707,7 @@ text-decoration: none;
 .menu-box-aggiuntivo ul.menu li a{
 	text-align: center;
 	text-decoration: none;
-	color: #666;	
+	color: #666;
 	display: inline-block;
 }
 
@@ -1718,7 +1718,7 @@ text-decoration: none;
 	list-style: none;
 	float: left;
 	background-color: #000;
-	
+
 	background-repeat: no-repeat;
 	background-position: center;
 	background-size: cover;
@@ -1852,7 +1852,7 @@ border-right: none;
 .menu-block-24 .menu li a{
     padding: .5rem 1rem;
     font-size: 19px;
-} 
+}
 
 .menu-block-24 .menu li.menu-mlid-8906.active,
 .menu-block-24 .menu li.menu-mlid-8906.active-trail{
@@ -1878,25 +1878,25 @@ border-right: none;
 .menu-block-24 ul.menu li.menu-mlid-8906 a.active-trail{
     text-decoration: none;
     color: #0698c1;
-} 
+}
 
 .menu-block-24 ul.menu li.menu-mlid-8907 a:hover,
 .menu-block-24 ul.menu li.menu-mlid-8907 a.active-trail{
     text-decoration: none;
     color: #FF3727;
-} 
+}
 
 .menu-block-24 ul.menu li.menu-mlid-8908 a:hover,
 .menu-block-24 ul.menu li.menu-mlid-8908 a.active-trail{
     text-decoration: none;
     color: #e46800;
-} 
+}
 
 .menu-block-24 ul.menu li.menu-mlid-8909 a:hover,
 .menu-block-24 ul.menu li.menu-mlid-8909 a.active-trail{
     text-decoration: none;
     color: #02a063;
-} 
+}
 
 .menu-block-24 ul.menu li#bt_ateneo,
 .menu-block-24 ul.menu li#bt_ricerca,
@@ -1925,7 +1925,7 @@ background: #f5f5f5;
 }
 #block-views-fields-taxonomy-blocks-block-2 .field-content{
 	min-height: 300px;
-	overflow: hidden;	
+	overflow: hidden;
 }
 
 /*MAPPA SITO*/
@@ -2028,7 +2028,7 @@ ol.quicktabs-tabs.quicktabs-style-basic li:hover a{
 	color: #159dc3;
 	margin-bottom: 10px;
 	margin-top: 30px;
-	padding-bottom: 0px;	
+	padding-bottom: 0px;
 	font-weight: 500;
 	font-size: 20px;
 }
@@ -2120,8 +2120,8 @@ ol.quicktabs-tabs.quicktabs-style-basic li:hover a{
 		background-color: #000;
 		display: block;
 	}
-	
-	
+
+
 #block-system-main-menu .menu li a.centerTextAteneo{
 	height: 25%;
 }
@@ -2142,18 +2142,18 @@ ol.quicktabs-tabs.quicktabs-style-basic li:hover a{
 		font-size: 45px;
 		font-weight: 300;
 		letter-spacing: -1px;
-		color: #fff;    
+		color: #fff;
 		display: flex;
 	 	text-align: center;
 	  flex-direction: column!important;
-	  justify-content: center!important; 
+	  justify-content: center!important;
 	 	/*position: absolute;*/
 	 	position: relative;
 	 	width: 100%;
 	 	left: 0;
 	 	right: 0;
 	 	padding: 1.25rem;
-	 	    
+
 	}
 
 }
@@ -2371,7 +2371,7 @@ ul.menu li a {
 }
 .field-name-field-view-bandi-interni .field-name-title{
 	font-weight: 500;
-	
+
 }
 .field-name-field-view-bandi-interni li.views-row{
 	margin-bottom: 40px !important;
@@ -2730,9 +2730,9 @@ div.section-title h3 {
 	letter-spacing: -1px;
     margin-bottom: 1rem;
 }
-div.section-title h2, 
-html body div#features.section h2.card-title.text-white, 
-div.col-md-4.d-flex.align-items-center div h2, 
+div.section-title h2,
+html body div#features.section h2.card-title.text-white,
+div.col-md-4.d-flex.align-items-center div h2,
 div.section-title h4 {
     font-family: 'Playfair Display',serif;
     font-size: 45px;
@@ -2850,7 +2850,7 @@ li.drop-down>a:hover +.drop-down-ul{
 		border-left: 0;
 		right: 10px;
 	  }
-	
+
 	li.drop-down>ul>li>a,
 	.flyout-right ul>li>a ,
 	.flyout-left ul>li>a {
@@ -2869,7 +2869,7 @@ li.drop-down>a:hover +.drop-down-ul{
 		/*display: block;*/
 		padding-right: 10px;
 	}
-	
+
 }
 
 
@@ -2942,12 +2942,12 @@ li.drop-down>a:hover +.drop-down-ul{
 	float: left;
 	overflow: hidden;
   }
-  
+
   .ricerca #portfoliolist table > tbody > tr[class^="portfolio"] {
 	display: none;
   }
-  
-  
+
+
   .portfolio-wrapper {
 	overflow: hidden;
 	position: relative !important;
@@ -2958,7 +2958,7 @@ li.drop-down>a:hover +.drop-down-ul{
 	display: block;
 	text-align: center;
   }
-  
+
   div[class^="portfolio"] img {
   /*.portfolio img {*/
 	max-width: 100%;
@@ -3000,7 +3000,7 @@ li.drop-down>a:hover +.drop-down-ul{
   #filters li span.active {
     background: #007BFF;
     color: #ffffff;
-}  
+}
 div[id^="portfoliolist"] > div > div[class^="portfolio"] {
     border: 1px solid #bcc0cd;
 }
@@ -3075,7 +3075,7 @@ div.pills-tabContent {
 	/*left: 0px; */
 	z-index: 1000;
 	display: block;
-	background-color: #14243c;	
+	background-color: #14243c;
 }
 
 .fsmall {
@@ -3103,7 +3103,7 @@ div.pills-tabContent {
     white-space: normal;
     vertical-align: middle;
     margin-bottom: 0px!important;
-} 
+}
 
 @media (max-width: 1199px){
 	.navbar-text {display: none;}
@@ -3154,7 +3154,7 @@ a.navbar-brand {
 .carousel-cell {
 	width: 80%;
 	height: auto;
-	margin-right: 10%; 
+	margin-right: 10%;
 }
 .carousel-cell-img {
 	width: 100%;
@@ -3162,7 +3162,7 @@ a.navbar-brand {
 	display: block;
 }
 .flickity-viewport {
-	height: 100%;	
+	height: 100%;
 }
 /* position dots up a bit */
 .flickity-page-dots {
@@ -3181,14 +3181,14 @@ a.navbar-brand {
 @media (max-width: 991px){
 	.carousel-cell {
 		width: 100%;
-		margin-right: 0px; 
+		margin-right: 0px;
 	}
 }
 @media (min-width: 1200px){
 	.carousel-cell-img {
 		width: 900px;
 		height: 500px;
-		margin: auto; 
+		margin: auto;
 	}
 	.carousel-cell{
 		width: 900px;
@@ -3200,8 +3200,8 @@ a.navbar-brand {
 .animated {
 	display: inline-block;
 	margin: 0 0.5rem;
-	animation: fadeIn; 
-	animation-duration: 1s; 
+	animation: fadeIn;
+	animation-duration: 1s;
 }
 
 
@@ -3211,7 +3211,7 @@ a.navbar-brand {
 }
 .nav-link.dropdown-toggle::after {
 	content:none;
-}  
+}
 .dropdown-submenu a::after {
 	transform: rotate(-90deg);
 	position: absolute;
@@ -3262,7 +3262,7 @@ a.navbar-brand {
 	.menu3 .admin {
 		padding-right: 15px;
 	}
-	
+
 }
 
 .navbar3-text{

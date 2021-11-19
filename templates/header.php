@@ -1,136 +1,116 @@
 <!doctype html>
 <html lang="it">
+    <head>
+        <title>Unich - Terza Missione</title>
 
-<head>
-    <title>Unich - Terza Missione</title>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="Unich - Università degli Studi G. d'Annunzio">
-    <meta name="keywords" content="università, d'annunzio, chieti, pescara, studi, offerta formativa">
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!-- Font -->
-    <!--Montserrat + Playfair-->
-    <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400|Playfair+Display:400,700" rel="stylesheet">
+        <!-- Custom meta tags -->
+        <meta name="description" content="Unich - Università degli Studi G. d'Annunzio">
+        <meta name="keywords" content="università, d'annunzio, chieti, pescara, studi, public engagement, competenze">
 
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">    <!-- Themify Icons -->
-    <link rel="stylesheet" href="bower_components/themify-icons/css/themify-icons.css" />
-    <!-- Owl carousel -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css" integrity="sha512-tS3S5qG0BlhnQROyJXvNjeEM4UpMXHrQfTGmbQ1gKmelCxlSEBUaxhRBj/EFTzpbP4RVSrpEikbmdJobCvhE3g==" crossorigin="anonymous" referrerpolicy="no-referrer" />    <!-- Main css -->
-    <link href="css/style.css" rel="stylesheet">
-    <link href="css/pe.css" rel="stylesheet">
-    <link href="css/custom/style_color0.css" rel="stylesheet">
-    <!--font awesome-->
-    <!--<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">-->
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
 
-    <!-- jQuery and Bootstrap -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.min.js" integrity="sha384-QJHtvGhmr9XOIpI6YVutG+2QOK9T+ZnN4kzFN1RtK3zEFEIsxhlmWl5/YESvpZ13" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
-    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>    <!-- Plugins JS -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js" integrity="sha512-bPs7Ae6pVvhOSiIcyUClR7/q2OAsRiovw4vAkX+zJbw3ShAeeqezq50RIIcIURq7Oa20rW2n2q+fyXBNcU9lrw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>    <!-- Custom JS -->
-    <script src="js/script.js"></script>
-    <!-- Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
-    <script>
-        $(function () {
-            $('[data-toggle="tooltip"]').tooltip()
-        })
-    </script>
-    <!--tagify per autocompletamento-->
-    <script src="https://unpkg.com/@yaireo/tagify"></script>
-    <script src="https://unpkg.com/@yaireo/tagify/dist/tagify.polyfills.min.js"></script>
-    <link href="https://unpkg.com/@yaireo/tagify/dist/tagify.css" rel="stylesheet" type="text/css" />
-    <!-- JS library for this application -->
-    <script src="js/library.js"></script>
+        <!--Tagify -->
+        <script src="https://unpkg.com/@yaireo/tagify"></script>
+        <script src="https://unpkg.com/@yaireo/tagify/dist/tagify.polyfills.min.js"></script>
+        <link href="https://unpkg.com/@yaireo/tagify/dist/tagify.css" rel="stylesheet" type="text/css" />
 
-<body data-spy="scroll" data-target="#navbar" data-offset="30">
-    <div class="nav-menu-top">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-12">
-                    <nav class="navbar navbar-expand-md navbar-dark">
-                        <div class="collapse navbar-collapse w-90 flex-md-column" id="navbarCollapse" style="font-size: 12px;">
-                            <ul class="navbar-nav ml-auto flex-nowrap">
-                                <li class="nav-item leaf text-right">
-                                    <a href="http://www.unich.it/" class="nav-link py-1 text-white" title="Home UdA" target="_blank">Home UdA</a>
-                                </li>
-                                <li class="nav-item leaf text-right">
-                                    <a href="https://www.unich.it/node/7208" class="nav-link py-1 text-white" title="MyPage" target="_blank">MyPage</a>
-                                </li>
-                                <li class="nav-item leaf text-right">
-                                    <a href="http://webmail.unich.it/horde/imp/" class="nav-link py-1 text-white" title="Webmail Personale" target="_blank">Webmail Personale</a>
-                                </li>
-                                <li class="nav-item leaf text-right">
-                                    <a href="https://mail.studenti.unich.it/" class="nav-link py-1 text-white" title="Webmail Studenti" target="_blank">Webmail Studenti</a>
-                                </li>
-                                <li class="nav-item leaf text-right">
-                                    <a href="https://www.unich.it/rubrica" class="nav-link py-1 text-white" title="Rubrica">Rubrica</a>
-                                </li>
-                                <li class="nav-item leaf text-right">
-                                    <a href="https://en.unich.it" class="nav-link py-1 text-white" title="EN" target="_blank">EN</a>
-                                </li>
-                            </ul>
-                        </div>
+        <!--Montserrat + Playfair Font-->
+        <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400|Playfair+Display:400,700" rel="stylesheet">
 
-                    </nav>
+        <!--Font Awesome-->
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css" integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
 
+        <!-- Themify Icon Set -->
+        <link rel="stylesheet" href="bower_components/themify-icons/css/themify-icons.css" />
+
+        <!-- JQuery and JQuery UI -->
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js" integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
+
+        <!-- MobApp CSS styles con modifiche di Simone -->
+        <link href="css/style.css" rel="stylesheet">
+        <!-- <script src="js/script.js"></script> -->
+
+        <!-- Custom CSS -->
+        <link href="css/pe.css" rel="stylesheet">
+
+        <!-- Custom js library -->
+        <script src="js/library.js"></script>
+    </head>
+
+    <body>
+        <div class="nav-menu-top">
+            <nav class="navbar navbar-expand-md navbar-dark">
+                <div class="container">
+                    <div class="collapse navbar-collapse" id="navbar-top">
+                        <ul class="navbar-nav ms-auto">
+                            <li class="nav-item">
+                                <a href="http://www.unich.it/" class="nav-link py-1 text-white" title="Home UdA" target="_blank">Home UdA</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="https://www.unich.it/node/7208" class="nav-link py-1 text-white" title="MyPage" target="_blank">MyPage</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="http://webmail.unich.it/horde/imp/" class="nav-link py-1 text-white" title="Webmail Personale" target="_blank">Webmail Personale</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="https://mail.studenti.unich.it/" class="nav-link py-1 text-white" title="Webmail Studenti" target="_blank">Webmail Studenti</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="https://www.unich.it/rubrica" class="nav-link py-1 text-white" title="Rubrica" target="_blank">Rubrica</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="https://en.unich.it" class="nav-link py-1 text-white" title="EN" target="_blank">EN</a>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
-                <!--col-->
-            </div>
-            <!--row-->
+            </nav>
         </div>
-        <!--container-->
-    </div>
-    <!--menu-top-->
+        <!--menu-top-->
 
-    <!-- Nav Menu -->
+        <!-- Nav Menu -->
 
-    <div class="nav-menu">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-12">
-                    <nav class="navbar navbar-light navbar-expand-lg">
-                        <a class="navbar-brand mr-0" href="https://www.unich.it/">
-                            <img src="images/logo_1.png" width="50" class="img-fluid py-2" alt="logo UdA">
-                        </a>
-                        <a class="navbar-brand" href="index.php">
-                            <!--<img src="images/lingue-logo.jpg" width="50" class="img-fluid py-2 ml-3" alt="logo Dipartimento">-->
-                            <span class="navbar-text ml-1 mb-2">COMPETENZE</span>
-                        </a>
-                        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation"> <span
-                                class="navbar-toggler-icon"></span> </button>
-                        <div class="collapse navbar-collapse text-center" id="navbar">
-                            <ul class="navbar-nav ml-auto">
-                                <li class="nav-item"> <a class="nav-link active" href="index.php">Home</a></li>
-                                <li class="nav-item"> <a class="nav-link" href="alphabetic.php">Indice parole chiave</a></li>
-                                <li class="nav-item"> <a class="nav-link" href="edit.php">Modifica competenze</a></li>
-                                <?php if (isset($_SESSION['userid'])) { ?>
-                                <li class="nav-item"> <a class="nav-link" href="logout.php">Logout</a></li>
-                                <?php } ?>
-                            </ul>
-                        </div>
-                    </nav>
+        <div class="nav-menu">
+            <nav class="navbar navbar-light navbar-expand-lg">
+                <div class="container">
+                    <span class="navbar-brand pe-5">
+                        <a href="https://www.unich.it/"><img src="images/logo_1.png" width="50" class="img-fluid py-2" alt="logo UdA"></a>
+                        <a href="index.php" class="brand-text" style="text-decoration: none;">COMPETENZE</a>
+                    </span>
+                    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+                        <span class="navbar-toggler-icon"></span>
+                    </button>
+                    <div class="collapse navbar-collapse" id="navbar">
+                        <ul class="navbar-nav">
+                            <li class="nav-item"><a class="nav-link" href="index.php">Home</a></li>
+                            <li class="nav-item"><a class="nav-link" href="alphabetic.php">Indice parole chiave</a></li>
+                            <li class="nav-item"><a class="nav-link" href="edit.php">Modifica competenze</a></li>
+                            <?php if (isset($_SESSION['userid'])) { ?>
+                            <li class="nav-item"><a class="nav-link" href="logout.php">Logout</a></li>
+                            <?php } ?>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </div>
+
+        <section class="header6" style="height: 100px; background-image: url('images/home.png'); background-size: cover; background-position: center;">
+            <div class="container">
+                <div class="row justify-content-md-center">
+                    <div class="mbr-white col-md-10">
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
+        </section>
 
-    <section class="header6" style="height: 100px; background-image: url('images/home.png'); background-size: cover; background-position: center;">
-        <div class="container">
-            <div class="row justify-content-md-center">
-                <div class="mbr-white col-md-10">
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section>
-        <div class="container">
-            <div class="section-title">
-                <h1 style="text-align: center;">Catalogo delle competenze</h2>
-            </div>
-        </div>
-    </section>
+        <section class="section">
+            <div class="container mb-5">
+                <div class="section-title">
+                    <h1 class="text-center">Catalogo delle competenze</h2>
+                </div class="section-title">

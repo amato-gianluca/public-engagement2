@@ -20,3 +20,19 @@
   min-width: 100%;
   min-height: 100%;
 }
+
+.brand-text {
+  font-size: 12px;
+  font-family: 'Montserrat', sans-serif !important;
+  font-weight: 300;
+  font-size: 12px;
+  width: calc(100% - 90px);
+  color: #1e365a !important;
+  white-space: normal;
+  vertical-align: middle;
+  margin-bottom: 0px!important;
+}
+
+.nav-menu-top {
+  font-size: 12px;
+}

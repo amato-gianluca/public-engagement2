@@ -4,31 +4,31 @@ require_once 'library.php';
 require_once 'templates/header.php';
 ?>
 
-<div class="section" style="border-bottom: 1px solid #ccc;">
-    <div class="container">
-        <div class="mb-5">
-            <h2 style="text-align: center;">Ricerca competenze</h2>
-        </div>
+                <div class="mb-5">
+                    <h2 class="text-center">Ricerca competenze</h2>
+                </div>
 
-        <div class="mb-3">
-            <label for="searchterms" class="form-label">Ricerca libera del testo</label>
-            <input type="text" class="form-control" id="searchterms" aria-describedby="searchterms_help">
-            <div id="searchterms_help" class="form-text">Le parole indicate verranno cercate nel curriculum, negli abstract delle pubblicazioni e nelle parole
-                chiavi dei docenti</div>
-        </div>
+                <h3>Criteri di ricerca</h3>
 
-        <p class="h2">Risultati</p>
+                <div class="mb-5">
+                    <label for="searchterms" class="form-label">Ricerca libera del testo</label>
+                    <input type="text" class="form-control" id="searchterms" aria-describedby="searchterms_help">
+                    <div id="searchterms_help" class="form-text">
+                        Le parole indicate verranno cercate nel curriculum, negli abstract delle pubblicazioni e nelle parole chiavi dei docenti.
+                    </div>
+                </div>
 
-        <ul class="list-group" id='researchers_list'>
-        </ul>
+                <h3>Risultati</h3>
 
-    </div>
-</div>
+                <ul class="list-group" id='researchers_list'>
+                </ul>
 
-<script>
-    $('#searchterms').on('input',searchterms_change_listener);
-    $('#searchterms').trigger('input');
-</script>
+                <script>
+                    const searchTerms = document.getElementById('searchterms')
+                    searchTerms.addEventListener('input',searchterms_change_listener)
+                    searchTerms.dispatchEvent(new Event('input'));
+                </script>
+
 <?php
 require_once("templates/footer.php");
 ?>

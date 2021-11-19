@@ -1,26 +1,32 @@
+let timer;
+
 function searchterms_change_listener() {
-    const researchers_list = $('#researchers_list');
-    researchers_list.empty();
-    researchers_list.append(`
+    document.getElementById('researchers_list').innerHTML = `
         <div class="spinner-border" role="status">
             <span class="sr-only">Loading...</span>
         </div>
-    `);
-    clearTimeout($.data(this, 'timer'));
-    var wait = setTimeout(searchterms_update, 500);
-    $(this).data('timer', wait);
+    `
+    clearTimeout(timer)
+    timer = setTimeout(searchterms_update, 500)
 }
 
 async function searchterms_update() {
-    const search =  $('#searchterms').val();
-    const researchers_list = $('#researchers_list');
-    const results = await $.getJSON('api/iris_get_docenti.php', { search: search });
-    researchers_list.empty();
+    const search = document.getElementById('searchterms').value
+    const searchParams = new URLSearchParams({ search: search })
+    const results_raw = await fetch('api/iris_get_docenti.php?' + searchParams)
+    const results = await results_raw.json()
+    const researchers_list = document.getElementById('researchers_list')
+    researchers_list.innerHTML = ''
     if (results.length) {
         for (const author of results) {
-            researchers_list.append(`<li class='list-group-item'>${author.name} ${author.score}`);
+            researchers_list.innerHTML += `<li class='list-group-item'>${author.name} ${author.score}`
         }
     } else {
-        researchers_list.append('<div class="alert alert-dark" role="alert">Nessun risultato trovato</div>');
+        researchers_list.innerHTML += '<div class="alert alert-dark" role="alert">Nessun risultato trovato</div>'
     }
+}
+
+function ready(callback) {
+    if (document.readyState != 'loading') callback()
+    else document.addEventListener('DOMContentLoaded', callback)
 }
