@@ -163,18 +163,22 @@ function iris_get_paper_from_crisId($crisId) {
     return $items;
 }
 
-function iris_format_paper($paper) {
+function iris_display_paper($paper) {
     $l = $paper['lookupValues'];
     $appeared = $paper['collection']['id']== 23 ? "in {$l['book']}, " : '';
-    return <<<DOC
-        {$l['contributors']}<br>
-        <i>{$l['title']}</i><br>
-        $appeared
-        {$l['year']}
-    DOC;
+    ?>
+    <?= h($l['contributors']) ?><br>
+    <a href="https://ricerca.unich.it/handle/<?= h($paper['handle']) ?>" target="_blank">
+      <?= h($l['title']) ?>
+    </a><br>
+    <?php if ($paper['collection']['id']== 23) { ?>
+        in <?= h($l['book']) ?><br>
+    <?php } ?>
+    <?= h($l['year']) ?>
+    <?php
 }
 
-function iris_get_docenti($search, $limit=20) {
+function iris_get_docenti($search, $start=0, $limit=20) {
     global $iris;
 
     $results = [ ];
@@ -197,16 +201,7 @@ function iris_get_docenti($search, $limit=20) {
         }
     }
     usort($results, function ($a, $b) { return ($a['score'] == $b['score']) ? 0 : (($a['score'] < $b['score']) ? 1 : -1); });
-    $results = array_slice($results, 0, $limit);
-    foreach ($results as &$author) {
-        $matricola = iris_crisId_to_matricola($author['crisId']);
-        $esse3_author = esse3_get_author_by_matricola($matricola);
-        if ($esse3_author) {
-            $author['name'] = $esse3_author['COGNOME'] . ' ' .  $esse3_author['NOME'];
-        } else {
-            $author['name'] = '---> ' . $matricola. ' ' .$author['name'];
-        }
-    }
+    $results = array_slice($results, $start, $limit);
     return $results;
 }
 
@@ -248,6 +243,13 @@ function pe_get_researcher($id) {
     return $data;
 }
 
+function pe_get_researchers_from_keyword($keyword_id) {
+    global $pe;
+    $query = $pe -> prepare('SELECT * FROM researchers r JOIN researcher_keywords rk ON r.id = rk.id_researcher WHERE rk.id_keyword = ?');
+    $result = $query -> execute([$keyword_id]);
+    return $query -> fetchAll(PDO::FETCH_ASSOC);
+}
+
 function pe_create_researcher($username) {
     global $pe;
     $query = $pe -> prepare('INSERT INTO researchers (username) VALUES (?)');
@@ -265,11 +267,10 @@ function pe_get_keyword_id($keyword, $lang) {
 
 function pe_get_keywords($lang, $prefix = '') {
     global $pe;
-    $query = $pe -> prepare('SELECT keyword FROM keywords WHERE lang = ? AND keyword LIKE ? ORDER BY keyword ASC');
+    $query = $pe -> prepare('SELECT id, keyword FROM keywords WHERE lang = ? AND keyword LIKE ? ORDER BY keyword ASC');
     $escapedprefix = addcslashes($prefix, '%_');
     $result = $query -> execute([$lang, $escapedprefix . '%']);
-    $data = $query -> fetchAll();
-    return array_map(function ($keyword) { return $keyword['keyword']; }, $data);
+    return $query -> fetchAll();
 }
 
 function pe_add_keyword($keyword, $lang) {
@@ -285,6 +286,7 @@ function pe_associate_researcher_keyword($researcher_id, $keyword_id, $pos) {
     $result = $query -> execute([$researcher_id, $keyword_id, $pos]);
     return $result;
 }
+
 
 function pe_delete_associated_keywords($researcher_id) {
     global $pe;

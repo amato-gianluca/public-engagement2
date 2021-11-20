@@ -108,7 +108,7 @@ require_once 'templates/header.php';
                             </tr>
                             <tr>
                                 <th scope="row">
-                                    <span class="rowtitle">Demerging (spin off) and Patent</span><br>
+                                    <span class="rowtitle">Demerging (spin off) and Patents</span><br>
                                 </th>
                                 <td>
                                     <textarea id="demerging_en" name="demerging_en" lang="en" rows="5"><?= h($pe_user['demerging_en']) ?></textarea>
@@ -164,7 +164,7 @@ require_once 'templates/header.php';
                                 <td colspan="2">
                                     <ul class="list-group">
                                         <?php foreach ($iris_papers as $paper) { ?>
-                                            <li class="list-group-item"><?= iris_format_paper($paper) ?></li>
+                                            <li class="list-group-item"><?php iris_display_paper($paper) ?></li>
                                         <?php } ?>
                                     </ul>
                                 </td>

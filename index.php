@@ -3,7 +3,6 @@ require_once 'config.php';
 require_once 'library.php';
 require_once 'templates/header.php';
 ?>
-
                 <div class="mb-5">
                     <h2 class="text-center">Ricerca competenze</h2>
                 </div>
@@ -23,12 +22,7 @@ require_once 'templates/header.php';
                 <ul class="list-group" id='researchers_list'>
                 </ul>
 
-                <script>
-                    const searchTerms = document.getElementById('searchterms')
-                    searchTerms.addEventListener('input',searchterms_change_listener)
-                    searchTerms.dispatchEvent(new Event('input'));
-                </script>
-
+                <script src="js/index.js"></script>
 <?php
 require_once("templates/footer.php");
 ?>

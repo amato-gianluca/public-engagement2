@@ -6,12 +6,24 @@ require_once 'templates/header.php';
 $keywords_en = pe_get_keywords('en');
 $keywords_it = pe_get_keywords('it');
 
-function display_keywords($keywords) {
-    foreach ($keywords as $keyword) {
-        ?><p><?= $keyword ?></p><?php
-    }
-}
-?>
+function display_keywords($keywords) { ?>
+    <div class="accordion" id="accordion-keywords">
+        <?php foreach ($keywords as $keyword) { ?>
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="flush-heading<?= h($keyword['id']) ?>">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapse<?= h($keyword['id']) ?>" aria-expanded="false" aria-controls="flush-collapse<?= h($keyword['id']) ?>">
+                    <?= $keyword['keyword'] ?>
+                </button>
+            </h2>
+            <div id="flush-collapse<?= h($keyword['id']) ?>" class="accordion-collapse collapse" aria-labelledby="flush-heading<?= h($keyword['id']) ?>" data-keyword="<?= h($keyword['id']) ?>" data-bs-parent="#accordion-keywords">
+                <div class="accordion-body">
+                    <ul class="list-group"></ul>
+                </div>
+            </div>
+        </div>
+        <?php } ?>
+    </div>
+<?php } ?>
 
                 <div class="mb-5">
                     <h2 class="text-center">Elenco alfabetico parole chiave</h2>
@@ -38,6 +50,8 @@ function display_keywords($keywords) {
                         <?php display_keywords($keywords_it); ?>
                     </div>
                 </div>
+
+                <script src="js/alphabetic.js"></script>
 
 <?php
 require_once("templates/footer.php");
