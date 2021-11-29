@@ -1,0 +1,6 @@
+<Files "login.php">
+  AuthType shibboleth
+  ShibRequestSetting requireSession 1
+  require shib-session
+</Files>
+

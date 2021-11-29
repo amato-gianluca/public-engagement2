@@ -2,11 +2,14 @@
 require_once 'config.php';
 require_once 'library.php';
 
-if (!DEBUG) die();
+if (isset($_SERVER['uid']) && $_SERVER['uid'] != ADMIN) {
+  $_SESSION['username'] = $_SERVER['uid'];
+  redirect_browser('checkuser.php?tgt='.urlencode($_GET['tgt']));
+}
 
 if (isset($_GET['username'])) {
-    $_SESSION['username'] = $_GET['username'];
-    redirect_browser("checkuser.php?tgt=".urlencode($_GET['tgt']));
+  $_SESSION['username'] = $_GET['username'];
+  redirect_browser('checkuser.php?tgt='.urlencode($_GET['tgt']));
 }
 
 require_once 'templates/header.php';
@@ -33,4 +36,3 @@ require_once 'templates/header.php';
 
 <?php
 require_once("templates/footer.php");
-?>
