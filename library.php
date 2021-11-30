@@ -7,22 +7,26 @@ ob_start();
 session_name('uda-competenze');
 session_start();
 
+if (file_exists(__DIR__ . '/config.php'))
+    require_once __DIR__ . '/config.php';
+
 require_once __DIR__ . '/vendor/autoload.php';
 
 try {
-    $esse3 = new PDO(ESSE3_DSN, ESSE3_USERNAME, ESSE3_PASSWORD,
+    $esse3 = new PDO(get_config('ESSE3_DSN'), get_config('ESSE3_USERNAME'), get_config('ESSE3_PASSWORD'),
         [ PDO::MYSQL_ATTR_SSL_CA =>  __DIR__ . '/ca_esse3.pem' ]);
 } catch (PDOException $e) {
     die('MySQL Connection to ESSE3 failed: ' . $e->getMessage());
 }
 
 try {
-    $pe = new PDO(PE_DNS, PE_USERNAME, PE_PASSWORD);
+    $pe = new PDO(get_config('PE_DSN'), get_config('PE_USERNAME'), get_config('PE_PASSWORD'));
 } catch (PDOException $e) {
     die('MySQL Connection to PE failed: ' . $e->getMessage());
 }
 
-$iris_dsn = 'mongodb://'.rawurlencode(IRIS_USERNAME).':'.rawurlencode(IRIS_PASSWORD).'@'.rawurlencode(IRIS_HOST);
+$iris_dsn = 'mongodb://'.rawurlencode(get_config('IRIS_USERNAME')) . ':' .
+              rawurlencode(get_config('IRIS_PASSWORD')).'@'.rawurlencode(get_config('IRIS_HOST'));
 $iris = (new MongoDB\Client($iris_dsn))->iris;
 
 function h($text) {
@@ -69,7 +73,7 @@ function map_error_code ($errno) {
 
 function exception_handler($ex) {
     ob_clean();
-    if (DEBUG) { ?>
+    if (get_config('ERROR_MODE')=='debug') { ?>
         <b>Uncaught exception</b>
         <pre><?= $ex ?></pre>
     <?php } else { ?>
@@ -81,7 +85,7 @@ function exception_handler($ex) {
 function error_handler($errno, $errstr, $errfile, $errline) {
     //if (($errno & error_reporting()) == 0) return;
     ob_clean();
-    if (DEBUG) {
+    if (get_config('ERROR_MODE')=='debug') {
         $errstr = htmlspecialchars($errstr);
     ?>
         <b><?= map_error_code($errno) ?>:</b> <?= $errstr ?> in <?= $errfile ?> on line <?= $errline ?>
@@ -91,6 +95,22 @@ function error_handler($errno, $errstr, $errfile, $errline) {
         Si è verificato un errore. Contatta lo sviluppatore del sofware.
     <?php }
     die();
+}
+
+function get_config($name) {
+    // get the configuration parameter $NAME either by environment variables or local constants
+    if (defined($name))
+        return constant($name);
+    $result = getenv($name);
+    if ($result != false) return $result;
+    $result = getenv($name . '_FILE');
+    if ($result != false) {
+        $f = fopen($result, 'r');
+        $result = trim(fgets($f));
+        fclose ($f);
+        return $result;
+    }
+    trigger_error("Configuration parameter $name has not been specified");
 }
 
 function esse3_get_docenti($dip_id = '031313') {

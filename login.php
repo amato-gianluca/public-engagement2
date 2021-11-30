@@ -1,8 +1,7 @@
 <?php
-require_once 'config.php';
 require_once 'library.php';
 
-if (isset($_SERVER['uid']) && $_SERVER['uid'] != ADMIN) {
+if (isset($_SERVER['uid']) && $_SERVER['uid'] != get_config('ADMIN_USERNAME')) {
   $_SESSION['username'] = $_SERVER['uid'];
   redirect_browser('checkuser.php?tgt='.urlencode($_GET['tgt']));
 }

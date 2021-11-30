@@ -1,12 +1,11 @@
 <?php
-require_once 'config.php';
 require_once 'library.php';
 
 if (isset($_GET['crisId'])) {
     $iris_username = $_GET['crisId'];
     $matricola = iris_crisId_to_matricola($iris_username);
 } else if (isset($_GET['matricola'])) {
-    if (! DEBUG)
+    if (get_config('ERROR_MODE') != 'debug')
         trigger_error('The  parameter `matricola` should only be used in DEBUG mode');
     $matricola = $_GET['matricola'];
     $iris_username = iris_matricola_to_crisId($matricola);
