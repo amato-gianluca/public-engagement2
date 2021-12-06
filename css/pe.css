@@ -36,3 +36,10 @@
 .nav-menu-top {
   font-size: 12px;
 }
+
+.text-toggle[aria-expanded=false] .text-expanded {
+  display: none;
+}
+.text-toggle[aria-expanded=true] .text-collapsed {
+  display: none;
+}
