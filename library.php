@@ -14,13 +14,17 @@ require_once __DIR__ . '/vendor/autoload.php';
 
 try {
     $esse3 = new PDO(get_config('ESSE3_DSN'), get_config('ESSE3_USERNAME'), get_config('ESSE3_PASSWORD'),
-        [ PDO::MYSQL_ATTR_SSL_CA =>  __DIR__ . '/ca_esse3.pem' ]);
+        [
+            PDO::MYSQL_ATTR_SSL_CA =>  __DIR__ . '/ca_esse3.pem',
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
+        ]);
 } catch (PDOException $e) {
     die('MySQL Connection to ESSE3 failed: ' . $e->getMessage());
 }
 
 try {
-    $pe = new PDO(get_config('PE_DSN'), get_config('PE_USERNAME'), get_config('PE_PASSWORD'));
+    $pe = new PDO(get_config('PE_DSN'), get_config('PE_USERNAME'), get_config('PE_PASSWORD'),
+        [ PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC ]);
 } catch (PDOException $e) {
     die('MySQL Connection to PE failed: ' . $e->getMessage());
 }
@@ -237,7 +241,7 @@ function pe_get_researcher($id) {
     global $pe;
     $query = $pe -> prepare('SELECT * FROM researchers WHERE id = ?');
     $result = $query -> execute([$id]);
-    $data = $query -> fetch(PDO::FETCH_ASSOC);
+    $data = $query -> fetch();
 
     $query = $pe -> prepare(<<<SQL
         SELECT *
@@ -246,7 +250,7 @@ function pe_get_researcher($id) {
         ORDER BY pos;
     SQL);
     $result = $query -> execute([$data['id']]);
-    $keywords = $query -> fetchAll(PDO::FETCH_ASSOC);
+    $keywords = $query -> fetchAll();
 
     $keywords_en = array_map(
         function ($keyword) { return $keyword['keyword']; },
@@ -267,7 +271,7 @@ function pe_get_researchers_from_keyword($keyword_id) {
     global $pe;
     $query = $pe -> prepare('SELECT * FROM researchers r JOIN researcher_keywords rk ON r.id = rk.id_researcher WHERE rk.id_keyword = ?');
     $result = $query -> execute([$keyword_id]);
-    return $query -> fetchAll(PDO::FETCH_ASSOC);
+    return $query -> fetchAll();
 }
 
 function pe_create_researcher($username) {
