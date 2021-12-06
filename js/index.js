@@ -39,4 +39,9 @@ ready(function() {
     const searchTerms = document.getElementById('searchterms')
     searchTerms.addEventListener('input',searchterms_change_listener)
     searchTerms.dispatchEvent(new Event('input'));
+
+    const tagify_keywords = new Tagify(document.getElementById('keywords'), {
+        enforceWhitelist: true
+    })
+    tagify_keywords.on('input', keywords_autocomplete('en'))
 })

@@ -35,6 +35,8 @@ require_once 'templates/header.php';
                             </div>
                         </div>
                     </div>
+                    <label for="keywords" class="form-label">Ricerca di parole chiave</label>
+                    <input type="text" class="form-control" id="keywords">
                 </div>
 
                 <h3>Risultati</h3>
