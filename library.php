@@ -183,8 +183,42 @@ function iris_matricola_to_crisId($username) {
 
 function iris_get_paper_from_crisId($crisId) {
     global $iris;
-    $items = $iris->items->find(['internalAuthors.authority' => $crisId, 'lookupValues.year' => [ '$gte' => strval(2015) ]]);
+    $items = $iris->items->find([
+        'internalAuthors.authority' => $crisId,
+        'lookupValues.year' => [ '$gte' => strval(2015) ]
+    ],[
+        'sort' => [ 'lookupValues.year' => -1, '_id' => -1 ]
+    ]);
     return $items;
+}
+
+function iris_get_paper_from_crisId_with_score($crisId, $search) {
+    global $iris;
+    $items = $iris->items->find([
+        '$text' => [ '$search' => $search, '$language' => 'en' ],
+        'internalAuthors.authority' => $crisId,
+        'lookupValues.year' => [ '$gte' => strval(2015) ]
+    ],[
+        'projection' =>  [
+            'score' => [ '$meta' => 'textScore' ],
+        ],
+        'sort' => [ 'lookupValues.year' => -1, '_id' => -1 ]
+    ]);
+    return $items;
+}
+
+function iris_get_paper_score($id, $search) {
+    global $iris;
+    $item = $iris->items->findOne([
+        '_id' => $id,
+        '$text' => [ '$search' => $search, '$language' => 'en' ],
+    ], [
+        'projection' =>  [
+            'score' => [ '$meta' => 'textScore' ],
+            '_id' => 1,
+        ]
+    ]);
+    return $item ? $item['score'] : 0;
 }
 
 function iris_display_paper($paper) {
@@ -200,6 +234,26 @@ function iris_display_paper($paper) {
     <?php } ?>
     <?= h($l['year']) ?>
     <?php
+    $abstract = $paper['metadata']['dc/description/abstract'][0]['value'] ?? '';
+    if ($abstract) {
+    ?>
+    <div class="mt-2">
+        <div class="d-flex w-100 justify-content-between">
+            <strong>Abstract</strong>&nbsp;
+            <span class="me-auto collapsed text-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#abstract-<?= h($paper['itemId']) ?>" aria-expanded="false" aria-controls="#abstract-<?= h($paper['itemId']) ?>">
+                <i class="fas fa-arrow-down text-expanded"></i>
+                <i class="fas fa-arrow-right text-collapsed"></i>
+            </span>
+            <?php if ($paper['score'] ?? null && get_config('ERROR_MODE')=='debug') { ?>
+                <span class="ms-auto">Punteggio: <?= h($paper['score'] ?? 0) ?></span>
+            <?php }  ?>
+        </div>
+        <div id="abstract-<?= h($paper['itemId']) ?>" class="collapse">
+            <?= h($abstract) ?>
+        </div>
+    </div>
+    <?php } ?>
+    <?php
 }
 
 function iris_get_docenti($search, $start=0, $limit=20) {
@@ -207,11 +261,12 @@ function iris_get_docenti($search, $start=0, $limit=20) {
 
     $results = [ ];
     $items = $iris->items->find([
-        '$text' => [ '$search' => $search ]
+        '$text' => [ '$search' => $search, '$language' => 'en' ],
+        'lookupValues.year' => [ '$gte' => strval(2015) ],
     ], [
         'projection' =>  [
             'score' => [ '$meta' => 'textScore' ],
-            'internalAuthors' => 1
+            'internalAuthors' => 1,
         ]
     ]);
     foreach  ($items as $item) {
@@ -310,7 +365,6 @@ function pe_associate_researcher_keyword($researcher_id, $keyword_id, $pos) {
     $result = $query -> execute([$researcher_id, $keyword_id, $pos]);
     return $result;
 }
-
 
 function pe_delete_associated_keywords($researcher_id) {
     global $pe;

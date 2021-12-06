@@ -112,5 +112,5 @@
         <section class="section">
             <div class="container mb-5">
                 <div class="section-title">
-                    <h1 class="text-center">Catalogo delle competenze</h2>
-                </div class="section-title">
+                    <h1 class="text-center">Catalogo delle competenze</h1>
+                </div>

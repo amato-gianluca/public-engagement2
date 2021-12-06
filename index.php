@@ -13,7 +13,7 @@ require_once 'templates/header.php';
                     <input type="text" class="form-control" id="searchterms" aria-describedby="searchterms_help">
                     <div id="searchterms_help" class="form-text mb-3">
                         Le parole indicate qua sopra verranno cercate nei dati inseriti in questa applicazione e nelle pubblicazioni registrate
-                        su <a href="https://ricerca.unich.it">ricerca.unich.it</a>.
+                        su <a href="https://ricerca.unich.it" target="_blank">ricerca.unich.it</a>.
                         <span class="collapsed text-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#searchinfo" aria-expanded="false" aria-controls="#searchinfo">
                             <i class="fas fa-arrow-down text-expanded"></i>
                             <i class="fas fa-arrow-right text-collapsed"></i>

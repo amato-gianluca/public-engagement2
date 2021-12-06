@@ -22,8 +22,12 @@ if ($matricola) {
         $pe_user = pe_get_researcher($id);
 }
 
+$search = $_GET['search'] ?? '';
+
 if ($iris_username) {
     $iris_papers = iris_get_paper_from_crisId($iris_username);
+    $iris_papers_scores = iris_get_paper_from_crisId_with_score($iris_username, $search);
+    $scores = [];
 }
 
 require_once 'templates/header.php';
@@ -53,7 +57,7 @@ require_once 'templates/header.php';
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link" id="papers-tab" data-bs-toggle="tab" data-bs-target="#papers-container" type="button" role="tab" aria-controls="papers-container" aria-selected="false">
-                            Papers
+                            Prodotti della ricerca
                         </button>
                     </li>
                 </ul>
@@ -135,9 +139,23 @@ require_once 'templates/header.php';
                     </div>
                     <div class="tab-pane fade" id="papers-container" role="tabpanel" aria-labelledby="papers-tab">
                     <?php } ?>
+                        <h2>Prodotti rilevanti rilevanti per i termini della ricerca</h2>
+                        <ul class="list-group">
+                        <?php foreach ($iris_papers_scores as $paper) {
+                            $scores[$paper['itemId']] = $paper['score'];
+                            ?>
+                            <li class="list-group-item">
+                                <?php iris_display_paper($paper) ?>
+                            </li>
+                        <?php } ?>
+                        </ul>
+                        <h2 class="mt-4">Altri prodotti</h2>
                         <ul class="list-group">
                         <?php foreach ($iris_papers as $paper) { ?>
-                            <li class="list-group-item"><?php iris_display_paper($paper) ?></li>
+                            <?php if (array_key_exists($paper['itemId'], $scores)) continue; ?>
+                            <li class="list-group-item">
+                                <?php iris_display_paper($paper) ?>
+                            </li>
                         <?php } ?>
                         </ul>
                 <?php if ($id) { ?>

@@ -22,7 +22,7 @@ async function searchterms_update() {
             researchers_list.innerHTML += `
                 <li class='list-group-item'>
                     <div class="d-flex w-100 justify-content-between">
-                    <a href='view.php?crisId=${encodeHTML(encodeURIComponent(author.crisId))}'>
+                    <a href='view.php?crisId=${encodeHTML(encodeURIComponent(author.crisId))}&amp;search=${encodeHTML(encodeURIComponent(search))}'>
                         ${encodeHTML(author.name)}
                     </a>
                     <span class="ms-auto">${encodeHTML(author.score.toFixed(2))}</span>
