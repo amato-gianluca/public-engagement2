@@ -224,8 +224,20 @@ function iris_get_paper_score($id, $search) {
 function iris_display_paper($paper) {
     $l = $paper['lookupValues'];
     $appeared = $paper['collection']['id']== 23 ? "in {$l['book']}, " : '';
+    $authors = $paper['metadata']['dc/authority/people'];
+    $numauthor = 0;
+    foreach ($paper['metadata']['dc/authority/people'] as $author)  {
+        if ($numauthor > 5) {
+            echo " et al.";
+            break;
+        };
     ?>
-    <?= h($l['contributors']) ?><br>
+        <span class="border"><?= $author['value']; ?></span>
+    <?php
+        $numauthor += 1;
+    }
+    ?>
+    <br>
     <a href="https://ricerca.unich.it/handle/<?= h($paper['handle']) ?>" target="_blank">
       <?= h($l['title']) ?>
     </a><br>
