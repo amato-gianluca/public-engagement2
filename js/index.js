@@ -13,7 +13,7 @@ function searchterms_change_listener() {
 async function searchterms_update() {
     const search = document.getElementById('searchterms').value
     const searchParams = new URLSearchParams({ search: search })
-    const results_raw = await fetch('api/iris_get_docenti.php?' + searchParams)
+    const results_raw = await fetch('api/search.php?' + searchParams)
     const results = await results_raw.json()
     const researchers_list = document.getElementById('researchers_list')
     researchers_list.innerHTML = ''

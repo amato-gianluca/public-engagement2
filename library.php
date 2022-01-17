@@ -268,7 +268,7 @@ function iris_display_paper($paper) {
     <?php
 }
 
-function iris_get_docenti($search, $start=0, $limit=20) {
+function iris_search($search, $start=0, $limit=20) {
     global $iris;
 
     $results = [ ];
