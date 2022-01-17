@@ -425,6 +425,22 @@ function pe_edit_researcher($id, $keywords_en, $keywords_it, $data) {
     return true;
 }
 
+function pe_search($search, $start=0, $limit=20) {
+    global $pe;
+
+    $query = $pe -> prepare(<<<SQL
+        SELECT
+          *,
+          MATCH (keywords_en,interests_en,demerging_en,position_en,awards_en,curriculum_en,keywords_it,interests_it,demerging_it,position_it,awards_it,curriculum_it) AGAINST (? IN NATURAL LANGUAGE MODE) AS score
+        FROM researchers
+        WHERE MATCH(keywords_en,interests_en,demerging_en,position_en,awards_en,curriculum_en,keywords_it,interests_it,demerging_it,position_it,awards_it,curriculum_it) AGAINST (? IN NATURAL LANGUAGE MODE)
+        ORDER BY score DESC
+        LIMIT {$start}, {$limit}
+    SQL);
+    $result = $query -> execute([$search, $search]);
+    return $query -> fetchAll();
+}
+
 function list_to_tagify($list) {
     $tags = [];
     foreach ($list as $item) {

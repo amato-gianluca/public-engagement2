@@ -30,3 +30,5 @@ CREATE TABLE `researcher_keywords` (
   `pos` tinyint(3) unsigned DEFAULT NULL,
   PRIMARY KEY (`id_researcher`,`id_keyword`)
 );
+
+CREATE FULLTEXT INDEX ft ON researchers (keywords_en,interests_en,demerging_en,position_en,awards_en,curriculum_en,keywords_it,interests_it,demerging_it,position_it,awards_it,curriculum_it);
