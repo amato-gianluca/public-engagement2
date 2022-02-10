@@ -291,7 +291,7 @@ function iris_display_paper($paper) {
     <?php
 }
 
-function iris_search($search, $start=0, $limit=20) {
+function iris_search($search, $keywords, $start=0, $limit=20) {
     global $iris;
 
     // Return items (papers) relevant to the search
@@ -328,12 +328,14 @@ function iris_search($search, $start=0, $limit=20) {
     // with matricola and name taken by ESSE3 (we could use the name returnes by IRIS, but they do not correspond an we prefer to
     // stick with the result given by ESSE3).
 
+    $keywords_id = pe_get_keywords_id($keywords, 'en');
     $real_results = [];
     $i = 0;
     foreach ($results as &$author) {
         $crisId = $author['crisId'];
         $matricola = iris_crisId_to_matricola($crisId);
         if (! $matricola) continue;
+        if (! pe_check_keywords($matricola, $keywords_id)) continue;
         $name = esse3_docenti_get_name_by_matricola($matricola);
         if (! $name) continue;
 
@@ -412,6 +414,15 @@ function pe_get_keyword_id($keyword, $lang) {
     return $value ? $value['id'] : null;
 }
 
+function pe_get_keywords_id($keywords, $lang) {
+    $results = [];
+    foreach ($keywords as $keyword) {
+        $id = pe_get_keyword_id($keyword, $lang);
+        if ($id) $results[] = intval($id);
+    }
+    return $results;
+}
+
 function pe_get_keywords($lang, $prefix = '') {
     global $pe;
     $query = $pe -> prepare('SELECT id, keyword FROM keywords WHERE lang = ? AND keyword LIKE ? ORDER BY keyword ASC');
@@ -425,6 +436,18 @@ function pe_add_keyword($keyword, $lang) {
     $query = $pe -> prepare('INSERT INTO keywords (keyword, lang) VALUES (?, ?)');
     $query -> execute([$keyword, $lang]);
     return $pe -> lastInsertId();
+}
+
+function pe_check_keywords($username, $keywords_id) {
+    global $pe;
+    if (empty($keywords_id)) return true;
+    $query = $pe -> prepare('SELECT rk.id_keyword FROM researchers r JOIN researcher_keywords rk ON r.id = rk.id_researcher WHERE r.username = ?');
+    $result = $query -> execute([$username]);
+    $keywords = [];
+    while ($k = $query -> fetch()) {
+        $keywords[] = intval($k['id_keyword']);
+    }
+    return ! array_diff($keywords_id, $keywords);
 }
 
 function pe_associate_researcher_keyword($researcher_id, $keyword_id, $pos) {

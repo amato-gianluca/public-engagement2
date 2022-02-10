@@ -12,7 +12,8 @@ function searchterms_change_listener() {
 
 async function searchterms_update() {
     const search = document.getElementById('searchterms').value
-    const searchParams = new URLSearchParams({ search: search })
+    const keywords =document.getElementById('keywords').value
+    const searchParams = new URLSearchParams({ search: search, keywords: keywords })
     const results_raw = await fetch('api/search.php?' + searchParams)
     const results = await results_raw.json()
     const researchers_list = document.getElementById('researchers_list')
