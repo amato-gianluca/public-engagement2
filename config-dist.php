@@ -17,4 +17,6 @@ define('PE_PASSWORD','');
 
 define('ADMIN_USERNAME', '');
 define('ERROR_MODE', 'debug');
+
+define('DEFAULT_SEARCH_LIMIT',20);
 ?>
