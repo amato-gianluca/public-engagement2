@@ -125,6 +125,23 @@ function esse3_get_docenti($dip_id = '031313') {
     return $query -> fetchAll();
 }
 
+function esse3_docenti_exists_matricola($matricola) {
+    global $esse3;
+
+    $query = $esse3 -> prepare('SELECT 1 FROM DOCENTI WHERE MATRICOLA = ?');
+    $query -> execute([$matricola]);
+    return boolval($query -> fetch());
+}
+
+function esse3_docenti_get_name_by_matricola($matricola) {
+    global $esse3;
+
+    $query = $esse3 -> prepare('SELECT NOME, COGNOME FROM DOCENTI WHERE MATRICOLA = ?');
+    $query -> execute([$matricola]);
+    $result = $query -> fetch();
+    return $result ? "$result[COGNOME], $result[NOME]" : null;
+}
+
 function esse3_get_author_by_matricola($matricola) {
     global $esse3;
 
@@ -178,7 +195,7 @@ function iris_crisId_to_matricola($crisId) {
 function iris_matricola_to_crisId($username) {
     global $iris;
     $author = $iris->authors->findOne(['gaSourceIdentifiers.sourceId' => $username], ['projection' => ['crisId' => 1]]);
-    return $author['crisId'];
+    return $author ? $author['crisId'] : null;
 }
 
 function iris_get_paper_from_crisId($crisId) {
@@ -238,9 +255,15 @@ function iris_display_paper($paper) {
     }
     ?>
     <br>
-    <a href="https://ricerca.unich.it/handle/<?= h($paper['handle']) ?>" target="_blank">
+    <?php $handle = $paper['handle'] ?? null ?>
+    <?php if ($handle) { ?>
+    <a href="https://ricerca.unich.it/handle/<?= h($handle) ?>" target="_blank">
+    <?php } ?>
       <?= h($l['title']) ?>
-    </a><br>
+    <?php if ($handle) { ?>
+    </a>
+    <?php } ?>
+    <br>
     <?php if ($paper['collection']['id']== 23) { ?>
         in <?= h($l['book']) ?><br>
     <?php } ?>
@@ -271,7 +294,7 @@ function iris_display_paper($paper) {
 function iris_search($search, $start=0, $limit=20) {
     global $iris;
 
-    $results = [ ];
+    // Return items (papers) relevant to the search
     $items = $iris->items->find([
         '$text' => [ '$search' => $search, '$language' => 'en' ],
         'lookupValues.year' => [ '$gte' => strval(2015) ],
@@ -281,19 +304,52 @@ function iris_search($search, $start=0, $limit=20) {
             'internalAuthors' => 1,
         ]
     ]);
+
+    // Group papers according to internal authors. For each author, computes the sum of all the scores of its papers.
+    $results = [ ];
     foreach  ($items as $item) {
         $authors = $item['internalAuthors'];
         foreach ($authors as &$author) {
             $crisId = $author['authority'];
             if (! array_key_exists($crisId, $results)) {
-                $results[$crisId] = [ 'name' => $author['author'], 'crisId' => $crisId, 'score' => 0.0 ];
+                $results[$crisId] = [ /* 'name' => $author['author'],  */ 'crisId' => $crisId, 'score' => 0.0 ];
             }
             $results[$crisId]['score'] += $item['score'];
         }
     }
+
+    // Sorts authors according to total score
     usort($results, function ($a, $b) { return ($a['score'] == $b['score']) ? 0 : (($a['score'] < $b['score']) ? 1 : -1); });
-    $results = array_slice($results, $start, $limit);
-    return $results;
+
+    // Copy in $real_results the data to be returned to the user. We cannot simply return the results from $start to
+    // $start + $limit since there are some people listed as internalAuthors in  paper (see rp46750) simply because they
+    // appear in esse3, but are not really personnel of the university. Therefore, we exclue all the authors which are not
+    // presente in the ESSE3 table DOCENTI. This is probably not 100% accurate. Moreover, we update the author data
+    // with matricola and name taken by ESSE3 (we could use the name returnes by IRIS, but they do not correspond an we prefer to
+    // stick with the result given by ESSE3).
+
+    $real_results = [];
+    $i = 0;
+    foreach ($results as &$author) {
+        $crisId = $author['crisId'];
+        $matricola = iris_crisId_to_matricola($crisId);
+        if (! $matricola) continue;
+        $name = esse3_docenti_get_name_by_matricola($matricola);
+        if (! $name) continue;
+
+        $i += 1;
+        if ($i <= $start) continue;
+
+        $author['name'] = $name;
+        $author['matricola'] = $matricola;
+        $real_results[] = $author;
+        if ($i == $start + $limit) break;
+    }
+
+    // Only returns the required results, according to $start and $limit.
+    // This post-filtering is not very efficient. It might be merged with the previous
+    // foreach, so that additional informations is sought only for authors which are actually returned.
+    return $real_results;
 }
 
 function pe_id_from_username($username) {
@@ -428,17 +484,44 @@ function pe_edit_researcher($id, $keywords_en, $keywords_it, $data) {
 function pe_search($search, $start=0, $limit=20) {
     global $pe;
 
+    // Query the local DB for the relevant data
     $query = $pe -> prepare(<<<SQL
         SELECT
-          *,
+          username,
           MATCH (keywords_en,interests_en,demerging_en,position_en,awards_en,curriculum_en,keywords_it,interests_it,demerging_it,position_it,awards_it,curriculum_it) AGAINST (? IN NATURAL LANGUAGE MODE) AS score
         FROM researchers
         WHERE MATCH(keywords_en,interests_en,demerging_en,position_en,awards_en,curriculum_en,keywords_it,interests_it,demerging_it,position_it,awards_it,curriculum_it) AGAINST (? IN NATURAL LANGUAGE MODE)
         ORDER BY score DESC
         LIMIT {$start}, {$limit}
     SQL);
-    $result = $query -> execute([$search, $search]);
-    return $query -> fetchAll();
+    $query -> execute([$search, $search]);
+
+    // Sorts authors according to total score
+    $results = $query -> fetchAll();
+    usort($results, function ($a, $b) { return ($a['score'] == $b['score']) ? 0 : (($a['score'] < $b['score']) ? 1 : -1); });
+
+    // Add new information for each result, namely crisId and name. Moreove, do not return results
+    // which do not appear in the DOCENTI table of ESSE3 (to be consistent with iris_search, see there
+    // for the rationale under this behaviour).
+    $i = 0;
+    $real_results = [];
+    foreach ($results as $researcher) {
+        $matricola = $researcher['username'];
+        // CHECK. Are username and matricola the same thing ?
+        $name = esse3_docenti_get_name_by_matricola($matricola);
+        if (! $name) continue;
+
+        $i += 1;
+        if ($i <= $start) continue;
+
+        $crisId = iris_matricola_to_crisId($matricola);
+        if (! $crisId) continue;
+        // CHECK. Is iris_matricola_to_crisId injective ?
+        $real_results[] = [ 'crisId' => $crisId, 'score' => doubleval($researcher['score']), 'name' => $name, 'matricola' => $matricola ];
+        if ($i == $start + $limit) break;
+    }
+
+    return $real_results;
 }
 
 function list_to_tagify($list) {
