@@ -16,26 +16,26 @@ if (isset($_POST['edit'])) {
         function($tag) { return $tag->value; },
         json_decode($_POST['keywords_it'])
     ) : [];
-    $result = pe_edit_researcher($userid, $keywords_en, $keywords_it, $_POST);
+    $result = pe_researcher_edit($userid, $keywords_en, $keywords_it, $_POST);
     if (! $result) trigger_error('Problem updating user info');
     $_SESSION['flash'] = 'Dati salvati con successo';
     redirect_browser('edit.php');
 }
 
-$pe_user = pe_get_researcher($userid);
+$pe_user = pe_researcher_from_id($userid);
 
 $username = $pe_user['username'];
-$esse3_user = esse3_get_author_by_matricola($username);
-$esse3_cv = esse3_get_cv_by_matricola($username);
-$esse3_role = esse3_get_role_by_matricola($username);
+$esse3_user = esse3_docente_from_matricola($username);
+$esse3_cv = esse3_cv_from_matricola($username);
+$esse3_role = esse3_role_from_matricola($username);
 
-$iris_username = iris_matricola_to_crisId($username);
-$iris_papers = iris_get_paper_from_crisId($iris_username);
+$iris_username = iris_crisid_from_matricola($username);
+$iris_papers = iris_items_from_crisid($iris_username);
 
 if (! $pe_user) {
     // Here we need to ask the user if he want to be part of the site.
-    if (pe_create_researcher($username)) {
-        $pe_user = pe_get_researcher($username);
+    if (pe_researcher_create($username)) {
+        $pe_user = pe_researcher_from_id($username);
         if (! $pe_user) trigger_error('Problem creating new user #2');
     } else {
         trigger_error('Problem creating new user #1');
@@ -163,7 +163,7 @@ require_once 'templates/header.php';
                                 <td colspan="2">
                                     <ul class="list-group">
                                         <?php foreach ($iris_papers as $paper) { ?>
-                                            <li class="list-group-item"><?php iris_display_paper($paper) ?></li>
+                                            <li class="list-group-item"><?php iris_display_item($paper) ?></li>
                                         <?php } ?>
                                     </ul>
                                 </td>

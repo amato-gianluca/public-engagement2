@@ -2,8 +2,8 @@
 require_once 'library.php';
 require_once 'templates/header.php';
 
-$keywords_en = pe_get_keywords('en');
-$keywords_it = pe_get_keywords('it');
+$keywords_en = pe_keywords_from_lang_and_prefix('en');
+$keywords_it = pe_keywords_from_lang_and_prefix('it');
 
 function display_keywords($keywords) { ?>
     <div class="accordion" id="accordion-keywords">

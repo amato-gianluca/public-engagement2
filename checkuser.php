@@ -9,7 +9,7 @@ $userid = pe_id_from_username($_SESSION['username']);
 
 if (! $userid) {
   if (isset($_GET['accept'])) {
-      $userid = pe_create_researcher($_SESSION['username']);
+      $userid = pe_researcher_create($_SESSION['username']);
   } elseif (isset($_GET['reject'])) {
       unset($_SESSION['username']);
       redirect_browser('.');

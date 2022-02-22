@@ -19,4 +19,7 @@ define('ADMIN_USERNAME', '');
 define('ERROR_MODE', 'debug');
 
 define('DEFAULT_SEARCH_LIMIT',20);
+
+define('DEVELOPER_NAME', 'Gianluca Amato');
+define('DEVELOPER_ADDRESS', 'gianluca.amato@unich.it');
 ?>

@@ -3,30 +3,30 @@ require_once 'library.php';
 
 if (isset($_GET['crisId'])) {
     $iris_username = $_GET['crisId'];
-    $matricola = iris_crisId_to_matricola($iris_username);
+    $matricola = iris_matricola_from_crisid($iris_username);
 } else if (isset($_GET['matricola'])) {
     if (get_config('ERROR_MODE') != 'debug')
         trigger_error('The  parameter `matricola` should only be used in DEBUG mode');
     $matricola = $_GET['matricola'];
-    $iris_username = iris_matricola_to_crisId($matricola);
+    $iris_username = iris_crisid_from_matricola($matricola);
 } else {
     redirect_browser('.');
 }
 
 if ($matricola) {
-    $esse3_user = esse3_get_author_by_matricola($matricola);
-    $esse3_cv = esse3_get_cv_by_matricola($matricola);
-    $esse3_role = esse3_get_role_by_matricola($matricola);
+    $esse3_user = esse3_docente_from_matricola($matricola);
+    $esse3_cv = esse3_cv_from_matricola($matricola);
+    $esse3_role = esse3_role_from_matricola($matricola);
     $id = pe_id_from_username($matricola);
     if ($id)
-        $pe_user = pe_get_researcher($id);
+        $pe_user = pe_researcher_from_id($id);
 }
 
 $search = $_GET['search'] ?? '';
 
 if ($iris_username) {
-    $iris_papers = iris_get_paper_from_crisId($iris_username);
-    $iris_papers_scores = iris_get_paper_from_crisId_with_score($iris_username, $search);
+    $iris_papers = iris_items_from_crisid($iris_username);
+    $iris_papers_scores = iris_items_from_crisid_with_score($iris_username, $search);
     $scores = [];
 }
 
@@ -145,7 +145,7 @@ require_once 'templates/header.php';
                             $scores[$paper['itemId']] = $paper['score'];
                             ?>
                             <li class="list-group-item">
-                                <?php iris_display_paper($paper) ?>
+                                <?php iris_display_item($paper) ?>
                             </li>
                         <?php } ?>
                         </ul>
@@ -154,7 +154,7 @@ require_once 'templates/header.php';
                         <?php foreach ($iris_papers as $paper) { ?>
                             <?php if (array_key_exists($paper['itemId'], $scores)) continue; ?>
                             <li class="list-group-item">
-                                <?php iris_display_paper($paper) ?>
+                                <?php iris_display_item($paper) ?>
                             </li>
                         <?php } ?>
                         </ul>
