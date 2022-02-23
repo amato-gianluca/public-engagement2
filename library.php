@@ -116,7 +116,7 @@ function error_handler($errno, $errstr, $errfile, $errline) {
 }
 
 /**
- * Returns a configuarion parameter.
+ * Returns a configuration parameter.
  *
  * Given a configuration parameter in $name, it returns, in order of priority:
  * - the content of a constant $name: new constants may be provided trough a config.php file;
@@ -519,8 +519,44 @@ function pe_researcher_from_keywordid($keyword_id) {
 }
 
 /**
+ * Returns a list of all researchers who have a given list of keywords (in any language).
+ */
+function pe_researchers_from_all_keywords($keywords) {
+    global $pe;
+    $query = $pe -> prepare(<<<SQL
+        SELECT r.*, JSON_ARRAYAGG(k.keyword) kwords
+        FROM researchers r
+        JOIN researcher_keywords rk ON r.id = rk.id_researcher
+        JOIN keywords k ON k.id = rk.id_keyword
+        HAVING JSON_CONTAINS(kwords, '[ "artificial intelligence" ]')
+    SQL);
+    $result = $query -> execute([]);
+    return $query -> fetchAll();
+}
+
+/**
+ * Returns a list of all researchers who have any of the keyword in $keywords,
+ * in descending order according to he number of keywords.
+ */
+function pe_researchers_from_any_keyword($keywords) {
+    global $pe;
+    $keywords_list = implode(',', $keywords);
+    $query = $pe -> prepare(<<<SQL
+        SELECT r.username, COUNT(DISTINCT k.keyword) AS score
+        FROM researchers r
+        JOIN researcher_keywords rk ON r.id = rk.id_researcher
+        JOIN keywords k ON k.id = rk.id_keyword
+        WHERE FIND_IN_SET(k.keyword, ?)
+        GROUP BY r.username
+        ORDER BY score DESC
+    SQL);
+    $result = $query -> execute([$keywords_list]);
+    return $query -> fetchAll();
+}
+
+/**
  * Creates a blank researcher with a given username. Returns the result of the operation
- * Returns true on success or false on failure.
+ * Returns true on success or false on failure. k.keyword MEMBER OF ('[ "artificial intelligence" ]')
  */
 function pe_researcher_create($username) {
     global $pe;
@@ -709,4 +745,18 @@ function pe_search($search, $start=0, $limit=20) {
     }
 
     return $real_results;
+}
+
+/**
+ * Returns the researchers in the pe database which satisfy a given query. The list of researchers is put
+ * in descending order by score, and only elements in positions between $start and $start+$limit are returned.
+ */
+function pe_search_keywords($keywords) {
+    $researchers = pe_researchers_from_any_keyword($keywords);
+    foreach ($researchers as &$researcher) {
+        $name = esse3_name_from_matricola($researcher['username']);
+        $researcher['name'] = $name;
+        $researcher['score'] = doubleval($researcher['score']);
+    }
+    return $researchers;
 }

@@ -31,9 +31,7 @@ async function load_researchers(e) {
                 </li>
             `
         }
-
     }
-
 }
 
 ready(() => {

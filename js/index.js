@@ -17,13 +17,19 @@ async function searchterms_update() {
     const results_raw = await fetch('api/search.php?' + searchParams)
     const results = await results_raw.json()
     const researchers_list = document.getElementById('researchers_list')
-    researchers_list.innerHTML = ''
+    var newhtml = ''
     if (results.length) {
         for (const author of results) {
-            researchers_list.innerHTML += `
+            newhtml += `
                 <li class='list-group-item'>
-                    <div class="d-flex w-100 justify-content-between">
-                    <a href='view.php?crisId=${encodeHTML(encodeURIComponent(author.crisId))}&amp;search=${encodeHTML(encodeURIComponent(search))}'>
+                    <div class="d-flex w-100 justify-content-between">`
+            if ('crisId' in author)
+                newhtml += `<a href='view.php?crisId=${encodeHTML(encodeURIComponent(author.crisId))}&amp;search=${encodeHTML(encodeURIComponent(search))}'>`
+            else if ('username' in author)
+                newhtml += `<a href='view.php?matricola=${encodeHTML(encodeURIComponent(author.username))}&amp;search=${encodeHTML(encodeURIComponent(search))}'>`
+            else
+                newhtml += `<a href=''>`
+            newhtml += `
                         ${encodeHTML(author.name)}
                     </a>
                     <span class="ms-auto">${encodeHTML(author.score.toFixed(2))}</span>
@@ -31,8 +37,9 @@ async function searchterms_update() {
                 </li>
             `
         }
+        researchers_list.innerHTML = newhtml
     } else {
-        researchers_list.innerHTML += '<div class="alert alert-dark" role="alert">Nessun risultato trovato</div>'
+        researchers_list.innerHTML = '<div class="alert alert-dark" role="alert">Nessun risultato trovato</div>'
     }
 }
 

@@ -11,8 +11,15 @@ $keywords = $_GET['keywords'] ? array_map(
     json_decode($_GET['keywords'])
 ) : [];
 
-$results1 = iris_search($_GET['search'] ?? '', $keywords, 0, $limit);
-$results2 = pe_search($_GET['search'] ?? '',  0, $limit);
+$search = $_GET['search'] ?? '';
 
-echo json_encode(array_merge($results2, $results1));
+if ($search) {
+    $results1 = iris_search($_GET['search'] ?? '', $keywords, 0, $limit);
+    $results2 = pe_search($_GET['search'] ?? '',  0, $limit);
+    $results = array_merge($results2, $results1);
+} else {
+    $results = pe_search_keywords($keywords);
+}
+
+echo json_encode($results);
 ?>

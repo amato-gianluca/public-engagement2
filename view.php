@@ -5,8 +5,6 @@ if (isset($_GET['crisId'])) {
     $iris_username = $_GET['crisId'];
     $matricola = iris_matricola_from_crisid($iris_username);
 } else if (isset($_GET['matricola'])) {
-    if (get_config('ERROR_MODE') != 'debug')
-        trigger_error('The  parameter `matricola` should only be used in DEBUG mode');
     $matricola = $_GET['matricola'];
     $iris_username = iris_crisid_from_matricola($matricola);
 } else {
