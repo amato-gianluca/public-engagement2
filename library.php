@@ -154,10 +154,10 @@ function get_config($name) {
 function esse3_displayname_from_matricola($matricola) {
     global $esse3;
 
-    $query = $esse3 -> prepare('SELECT CONCAT(NOME, " ", COGNOME) AS displayname FROM DOCENTI WHERE MATRICOLA = ?');
+    $query = $esse3 -> prepare('SELECT CONCAT(NOME, " ", COGNOME) AS name FROM DOCENTI WHERE MATRICOLA = ?');
     $query -> execute([$matricola]);
     $result = $query -> fetch();
-    return $result ? $result['displayname'] :  null;
+    return $result ? $result['name'] :  null;
 }
 
 /**
@@ -315,7 +315,7 @@ function iris_item_display($item) {
  * is computed, and each auhtor is assiged a score which is the sum of the scores of its papers. The
  * result is ordered by decenfing order of score and a matricola number is associated when available.
  */
-function iris_search($query) {
+function iris_authors_search($query) {
     global $iris;
 
     // Return items (items) relevant to the search
@@ -424,26 +424,10 @@ function pe_researcher_from_keywordid($keyword_id) {
 }
 
 /**
- * Returns a list of all researchers who have a given list of keywords (in any language).
- */
-function pe_researchers_from_all_keywords($keywords) {
-    global $pe;
-    $query = $pe -> prepare(<<<SQL
-        SELECT r.*, JSON_ARRAYAGG(k.keyword) kwords
-        FROM researchers r
-        JOIN researcher_keywords rk ON r.id = rk.id_researcher
-        JOIN keywords k ON k.id = rk.id_keyword
-        HAVING JSON_CONTAINS(kwords, '[ "artificial intelligence" ]')
-    SQL);
-    $query -> execute([]);
-    return $query -> fetchAll();
-}
-
-/**
  * Returns a list of all researchers who have any of the keyword in $keywords,
- * in descending order according to he number of keywords.
+ * in descending order according to the number of keywords.
  */
-function pe_researchers_from_any_keyword($keywords) {
+function pe_researchers_from_keywords($keywords) {
     global $pe;
     $keywords_list = implode(',', $keywords);
     $query = $pe -> prepare(<<<SQL
@@ -482,19 +466,6 @@ function pe_keywordid_from_keyword($keyword, $lang) {
 }
 
 /**
- * Returns a list of keyword id corresponding to a list of keywords.
- * All the keywords are in the same language.
- */
-function pe_keywordsid_from_keywords($keywords, $lang) {
-    $results = [];
-    foreach ($keywords as $keyword) {
-        $id = pe_keywordid_from_keyword($keyword, $lang);
-        if ($id) $results[] = intval($id);
-    }
-    return $results;
-}
-
-/**
  * Returns a list of keywords (both id and text) of a given language which begins with a given prefix.
  */
 function pe_keywords_from_lang_and_prefix($lang = '', $prefix = '') {
@@ -519,21 +490,6 @@ function pe_keyword_create($keyword, $lang) {
     $query = $pe -> prepare('INSERT INTO keywords (keyword, lang) VALUES (?, ?)');
     $query -> execute([$keyword, $lang]);
     return $pe -> lastInsertId();
-}
-
-/**
- * Returns true if the given $username has all the keywords in $keywords_id.
- */
-function pe_check_keywords($username, $keywords_id) {
-    global $pe;
-    if (empty($keywords_id)) return true;
-    $query = $pe -> prepare('SELECT rk.id_keyword FROM researchers r JOIN researcher_keywords rk ON r.id = rk.id_researcher WHERE r.username = ?');
-    $query -> execute([$username]);
-    $keywords = [];
-    while ($k = $query -> fetch()) {
-        $keywords[] = intval($k['id_keyword']);
-    }
-    return ! array_diff($keywords_id, $keywords);
 }
 
 /**
@@ -612,82 +568,62 @@ function pe_researcher_edit($researcher_id, $keywords_en, $keywords_it, $data) {
  * Returns the researchers in the pe database which satisfy a given full-text query. The list of researchers is put
  * in descending order by score.
  */
-function pe_search($search) {
+function pe_researchers_search($search) {
     global $pe;
 
-    // Query the local DB for the relevant data
     $query = $pe -> prepare(<<<SQL
         SELECT
-          username as matricola,
+          username,
           MATCH (keywords_en,interests_en,demerging_en,position_en,awards_en,curriculum_en,keywords_it,interests_it,demerging_it,position_it,awards_it,curriculum_it) AGAINST (? IN NATURAL LANGUAGE MODE) AS score
         FROM researchers
-        WHERE MATCH(keywords_en,interests_en,demerging_en,position_en,awards_en,curriculum_en,keywords_it,interests_it,demerging_it,position_it,awards_it,curriculum_it) AGAINST (? IN NATURAL LANGUAGE MODE)
+        HAVING score > 0
         ORDER BY score DESC
     SQL);
-    $query -> execute([$search, $search]);
+    $query -> execute([$search]);
     return $query -> fetchAll();
 }
 
 /**
- * Returns the researchers in the pe database which satisfy a given query. The list of researchers is put
- * in descending order by score, and only elements in positions between $start and $start+$limit are returned.
- */
-function pe_search_keywords($keywords) {
-    $researchers = pe_researchers_from_any_keyword($keywords);
-    foreach ($researchers as &$researcher) {
-        $researcher['name'] = esse3_displayname_from_matricola($researcher['username']);
-        $researcher['score'] = doubleval($researcher['score']);
-    }
-    return $researchers;
-}
-
-/**
- * This is the main search method of the software. Combines results of pe_search and iris_search, filter results using
- * keywords, remove authors which are not staff member of the university, and returns a window of all the available results.
+ * This is the main search method of the software. Combines results of iris_authors_search, pe_researchers_search and
+ * pe_researchers_from_keywords. Each result is an associative array with three members:
+ * matricola (string), name (string) and score (double). Results are ordered decreseangly according to score.
  */
 function search($search, $keywords, $start=0, $limit=20) {
-
-    // Separately perform a full-text search in iri and pe
-    $iris_authors = iris_search($search);
-    $pe_authors = pe_search($search);
-
-    // Merge the two results summing the scores
     $authors = [];
+
+    $iris_authors = iris_authors_search($search);
     foreach ($iris_authors as $iris_author) {
         $matricola = $iris_author['matricola'];
         if ($matricola) {
             $authors[$matricola] = $iris_author;
         }
     }
+
+    $pe_authors = array_merge(pe_researchers_search($search), pe_researchers_from_keywords($keywords));
     foreach ($pe_authors as &$pe_author) {
-        $matricola = $pe_author['matricola'];
-        if (array_key_exists($matricola, $authors))
+        $matricola = $pe_author['username'];
+        if (array_key_exists($matricola, $authors)) {
             $authors[$matricola]['score'] += $pe_author['score'];
-        else {
-            $pe_author['score'] = doubleval($pe_author['score']);
-            $authors[$matricola] = $pe_author;
+        } else {
+            $authors[$matricola] = [
+                'matricola' => $matricola,
+                'score' => doubleval($pe_author['score']),
+            ];
         }
     }
 
-    // Sort all authors according to descending score
-    usort($authors, function ($a, $b) { return ($a['score'] == $b['score']) ? 0 : (($a['score'] < $b['score']) ? 1 : -1); });
+    usort($authors, fn ($a, $b) => ($b['score'] <=> $a['score']));
 
-    $keywords_id = pe_keywordsid_from_keywords($keywords, 'en');
     $real_results = [];
     $i = 0;
-    foreach ($authors as $author) {
-        $matricola = $author['matricola'];
-        if (! pe_check_keywords($matricola, $keywords_id)) continue;
-        $name = esse3_displayname_from_matricola($matricola);
-        if (! $name) continue;
+    foreach ($authors as &$author) {
+        $author['name'] = esse3_displayname_from_matricola($author['matricola']);
+        if (! $author['name']) continue;
         $i += 1;
         if ($i <= $start) continue;
-        $real_results[] = [ 'matricola' => $matricola, 'name' => $name, 'score' => $author['score'] ];
+        $real_results[] = $author;
         if ($i == $start + $limit) break;
     }
 
-    // Only returns the required results, according to $start and $limit.
-    // This post-filtering is not very efficient. It might be merged with the previous
-    // foreach, so that additional informations is sought only for authors which are actually returned.
     return $real_results;
 }

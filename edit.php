@@ -163,7 +163,7 @@ require_once 'templates/header.php';
                                 <td colspan="2">
                                     <ul class="list-group">
                                         <?php foreach ($iris_papers as $paper) { ?>
-                                            <li class="list-group-item"><?php iris_display_item($paper) ?></li>
+                                            <li class="list-group-item"><?php iris_item_display($paper) ?></li>
                                         <?php } ?>
                                     </ul>
                                 </td>

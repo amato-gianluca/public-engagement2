@@ -38,22 +38,7 @@ require_once 'templates/header.php';
                     <label for="keywords" class="form-label">Ricerca di parole chiave</label>
                     <input type="text" class="form-control" id="keywords" aria-described-by="keywords_help">
                     <div id="keywords_help" class="form-text mb-3">
-                        Inserire qui un elenco di parole chiave.
-                        <span class="collapsed text-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#keywordsinfo" aria-expanded="false" aria-controls="#keywordsinfo">
-                            <i class="fas fa-arrow-down text-expanded"></i>
-                            <i class="fas fa-arrow-right text-collapsed"></i>
-                        </span>
-                        <div id="keywordsinfo" class="collapse">
-                            <div class="mt-2">
-                            Più in dettaglio, se il campo <em>Ricerca libera del testo</em> è vuoto, verrà restituito l'elenco di tutto il personale che, nel proprio profilo,
-                            ha inserito almeno una delle parole chiavi sopra indicate. L'elenco è ordinato sulla base del numero di parole chiave indicate che sono presenti
-                            nel profilo dell'utente.
-                            </div>
-                            <div class="mt-2">
-                            Se invece il campo <em>Ricerca libera del testo</em> non è vuoto, le parole chiave fungereanno solo da filtro, eliminando dai risultati
-                            il personale che non ha nessuna parola chiave in comune con quelle specificate.
-                            </div>
-                        </div>
+                        Le parole chiave qua sopra verranno cercate nei dati inseriti in questa applicazione.
                     </div>
                 </div>
 

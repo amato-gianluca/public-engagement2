@@ -13,11 +13,5 @@ $keywords = $_GET['keywords'] ? array_map(
 
 $search = $_GET['search'] ?? '';
 
-if ($search) {
-    $results = search($search, $keywords, 0, $limit);
-} else {
-    $results = pe_search_keywords($keywords);
-}
-
-echo json_encode($results);
+echo json_encode(search($search, $keywords, 0, $limit));
 ?>
