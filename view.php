@@ -12,7 +12,7 @@ if (isset($_GET['crisId'])) {
 }
 
 if ($matricola) {
-    $esse3_user = esse3_docente_from_matricola($matricola);
+    $esse3_displayname = esse3_displayname_from_matricola($matricola);
     $esse3_cv = esse3_cv_from_matricola($matricola);
     $esse3_role = esse3_role_from_matricola($matricola);
     $id = pe_id_from_username($matricola);
@@ -36,7 +36,7 @@ require_once 'templates/header.php';
                 </div>
 
                 <div class="col-md-12 mb-3">
-                    <span class="lead"><?= h($esse3_user['COGNOME']) ?> <?= h($esse3_user['NOME']) ?></span>
+                    <span class="lead"><?= h($esse3_displayname) ?></span>
                     <br>
                     <?= h($esse3_role['DS_RUOLO'] ?? '') ?>
                 </div>

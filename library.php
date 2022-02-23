@@ -173,7 +173,8 @@ function esse3_check_docente_from_matricola($matricola) {
 }
 
 /**
- * Returns a teacher given its matricola number.
+ * Returns a teacher given its matricola number.  A field `displayname` is
+ * added in the form 'nome cognome'.
  *
  * @param matricola matricola number of the teacher
  * @todo use the correct table in ESSE3 for this query
@@ -181,9 +182,9 @@ function esse3_check_docente_from_matricola($matricola) {
 function esse3_docente_from_matricola($matricola) {
     global $esse3;
 
-    $query = $esse3 -> prepare('SELECT * FROM DOCENTI WHERE MATRICOLA = ?');
-    $result = $query -> execute([$matricola]);
-    return $query->fetch();
+    $query = $esse3 -> prepare('SELECT CONCAT(NOME, " ", COGNOME) AS displayname FROM DOCENTI WHERE MATRICOLA = ?');
+    $query -> execute([$matricola]);
+    $result = $query->fetch();
 }
 
 /**
@@ -198,7 +199,7 @@ function esse3_docenti_from_matricole($matricole) {
     global $esse3;
 
     $inQuery = implode(',', array_fill(0, count($matricole), '?'));
-    $query = $esse3 -> prepare('SELECT * FROM DOCENTI WHERE MATRICOLA IN ('.$inQuery.')');
+    $query = $esse3 -> prepare('SELECT CONCAT(NOME, " ", COGNOME) AS displayname FROM DOCENTI WHERE MATRICOLA IN ('.$inQuery.')');
     foreach ($matricole as $k => $matricola) {
         $query->bindValue($k+1, $matricola);
     }
@@ -212,13 +213,13 @@ function esse3_docenti_from_matricole($matricole) {
  * @param matricola matricola number
  * @todo use the correct table in ESSE3 for this query
  */
-function esse3_name_from_matricola($matricola) {
+function esse3_displayname_from_matricola($matricola) {
     global $esse3;
 
-    $query = $esse3 -> prepare('SELECT NOME, COGNOME FROM DOCENTI WHERE MATRICOLA = ?');
+    $query = $esse3 -> prepare('SELECT CONCAT(NOME, " ", COGNOME) AS displayname FROM DOCENTI WHERE MATRICOLA = ?');
     $query -> execute([$matricola]);
     $result = $query -> fetch();
-    return $result ? "$result[COGNOME], $result[NOME]" : null;
+    return $result['displayname'];
 }
 
 /**
@@ -443,7 +444,7 @@ function iris_search($search, $keywords, $start=0, $limit=20) {
         $matricola = iris_matricola_from_crisid($crisId);
         if (! $matricola) continue;
         if (! pe_check_keywords($matricola, $keywords_id)) continue;
-        $name = esse3_name_from_matricola($matricola);
+        $name = esse3_displayname_from_matricola($matricola);
         if (! $name) continue;
 
         $i += 1;
@@ -737,7 +738,7 @@ function pe_search($search, $start=0, $limit=20) {
     foreach ($results as $researcher) {
         $matricola = $researcher['username'];
         // CHECK. Are username and matricola the same thing ?
-        $name = esse3_name_from_matricola($matricola);
+        $name = esse3_displayname_from_matricola($matricola);
         if (! $name) continue;
 
         $i += 1;
@@ -760,7 +761,7 @@ function pe_search($search, $start=0, $limit=20) {
 function pe_search_keywords($keywords) {
     $researchers = pe_researchers_from_any_keyword($keywords);
     foreach ($researchers as &$researcher) {
-        $name = esse3_name_from_matricola($researcher['username']);
+        $name = esse3_displayname_from_matricola($researcher['username']);
         $researcher['name'] = $name;
         $researcher['score'] = doubleval($researcher['score']);
     }
