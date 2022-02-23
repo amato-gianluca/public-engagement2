@@ -14,9 +14,7 @@ $keywords = $_GET['keywords'] ? array_map(
 $search = $_GET['search'] ?? '';
 
 if ($search) {
-    $results1 = iris_search($_GET['search'] ?? '', $keywords, 0, $limit);
-    $results2 = pe_search($_GET['search'] ?? '',  0, $limit);
-    $results = array_merge($results2, $results1);
+    $results = search($search, $keywords, 0, $limit);
 } else {
     $results = pe_search_keywords($keywords);
 }

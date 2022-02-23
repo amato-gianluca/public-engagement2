@@ -311,20 +311,18 @@ function iris_item_display($item) {
 }
 
 /**
- * Returns the authors of items which satisfy a the query $search. The score of each item satisfying the
- * query is computed, and each person is assiged a score which is the sum of the scores of its papers.
- * Persons which do not have all the keywords specified in $keywords are removed from the list, and the same happens
- * to authors which do not seem to be teacher of the university. Finally, the list is put in descending order
- * according to the accumulated score, and the positions between $start and $start+$limit are returned.
+ * Returns the authors of those items which satisfy the given full-text query. The score of each item
+ * is computed, and each auhtor is assiged a score which is the sum of the scores of its papers. The
+ * result is ordered by decenfing order of score and a matricola number is associated when available.
  */
-function iris_search($search, $keywords, $start=0, $limit=20) {
+function iris_search($query) {
     global $iris;
 
     // Return items (items) relevant to the search
     $authors = $iris->items->aggregate([
         [
             '$match' => [
-                '$text' => [ '$search' => $search, '$language' => 'en' ],
+                '$text' => [ '$search' => $query, '$language' => 'en' ],
                 'lookupValues.year' => [ '$gte' => strval(2015) ]
             ]
         ], [
@@ -359,36 +357,13 @@ function iris_search($search, $keywords, $start=0, $limit=20) {
                 'score' => 1,
                 'matricola' => [ '$first' => '$identifiers.gaSourceIdentifiers.sourceId' ]
             ]
+        ], [
+            '$match' => [
+                'matricola' => [ '$exists' => true ]
+            ]
         ]
-
     ]);
-
-    // Copy in $real_results the data to be returned to the user. We cannot simply return the results from $start to
-    // $start + $limit since there are some people listed as internalAuthors in  item (see rp46750) simply because they
-    // appear in esse3, but are not really personnel of the university. Therefore, we exclue all the authors which are not
-    // presente in the ESSE3 table DOCENTI. This is probably not 100% accurate. Moreover, we update the author data
-    // with matricola and name taken by ESSE3 (we could use the name returnes by IRIS, but they do not correspond an we prefer to
-    // stick with the result given by ESSE3).
-
-    $keywords_id = pe_keywordsid_from_keywords($keywords, 'en');
-    $real_results = [];
-    $i = 0;
-    foreach ($authors as $author) {
-        $crisId = $author['_id'];
-        $matricola = $author['matricola'];
-        if (! pe_check_keywords($matricola, $keywords_id)) continue;
-        $name = esse3_displayname_from_matricola($matricola);
-        if (! $name) continue;
-        $i += 1;
-        if ($i <= $start) continue;
-        $real_results[] = [ 'crisId' => $crisId, 'matricola' => $matricola, 'name' => $name, 'score' => $author['score']];
-        if ($i == $start + $limit) break;
-    }
-
-    // Only returns the required results, according to $start and $limit.
-    // This post-filtering is not very efficient. It might be merged with the previous
-    // foreach, so that additional informations is sought only for authors which are actually returned.
-    return $real_results;
+    return $authors;
 }
 
 /**
@@ -634,50 +609,23 @@ function pe_researcher_edit($researcher_id, $keywords_en, $keywords_it, $data) {
 }
 
 /**
- * Returns the researchers in the pe database which satisfy a given query. The list of researchers is put
- * in descending order by score, and only elements in positions between $start and $start+$limit are returned.
+ * Returns the researchers in the pe database which satisfy a given full-text query. The list of researchers is put
+ * in descending order by score.
  */
-function pe_search($search, $start=0, $limit=20) {
+function pe_search($search) {
     global $pe;
 
     // Query the local DB for the relevant data
     $query = $pe -> prepare(<<<SQL
         SELECT
-          username,
+          username as matricola,
           MATCH (keywords_en,interests_en,demerging_en,position_en,awards_en,curriculum_en,keywords_it,interests_it,demerging_it,position_it,awards_it,curriculum_it) AGAINST (? IN NATURAL LANGUAGE MODE) AS score
         FROM researchers
         WHERE MATCH(keywords_en,interests_en,demerging_en,position_en,awards_en,curriculum_en,keywords_it,interests_it,demerging_it,position_it,awards_it,curriculum_it) AGAINST (? IN NATURAL LANGUAGE MODE)
         ORDER BY score DESC
-        LIMIT {$start}, {$limit}
     SQL);
     $query -> execute([$search, $search]);
-
-    // Sorts authors according to total score
-    $results = $query -> fetchAll();
-    usort($results, function ($a, $b) { return ($a['score'] == $b['score']) ? 0 : (($a['score'] < $b['score']) ? 1 : -1); });
-
-    // Add new information for each result, namely crisId and name. Moreove, do not return results
-    // which do not appear in the DOCENTI table of ESSE3 (to be consistent with iris_search, see there
-    // for the rationale under this behaviour).
-    $i = 0;
-    $real_results = [];
-    foreach ($results as $researcher) {
-        $matricola = $researcher['username'];
-        // CHECK. Are username and matricola the same thing ?
-        $name = esse3_displayname_from_matricola($matricola);
-        if (! $name) continue;
-
-        $i += 1;
-        if ($i <= $start) continue;
-
-        $crisId = iris_crisid_from_matricola($matricola);
-        if (! $crisId) continue;
-        // CHECK. Is iris_crisid_from_matricola injective ?
-        $real_results[] = [ 'crisId' => $crisId, 'score' => doubleval($researcher['score']), 'name' => $name, 'matricola' => $matricola ];
-        if ($i == $start + $limit) break;
-    }
-
-    return $real_results;
+    return $query -> fetchAll();
 }
 
 /**
@@ -691,4 +639,55 @@ function pe_search_keywords($keywords) {
         $researcher['score'] = doubleval($researcher['score']);
     }
     return $researchers;
+}
+
+/**
+ * This is the main search method of the software. Combines results of pe_search and iris_search, filter results using
+ * keywords, remove authors which are not staff member of the university, and returns a window of all the available results.
+ */
+function search($search, $keywords, $start=0, $limit=20) {
+
+    // Separately perform a full-text search in iri and pe
+    $iris_authors = iris_search($search);
+    $pe_authors = pe_search($search);
+
+    // Merge the two results summing the scores
+    $authors = [];
+    foreach ($iris_authors as $iris_author) {
+        $matricola = $iris_author['matricola'];
+        if ($matricola) {
+            $authors[$matricola] = $iris_author;
+        }
+    }
+    foreach ($pe_authors as &$pe_author) {
+        $matricola = $pe_author['matricola'];
+        if (array_key_exists($matricola, $authors))
+            $authors[$matricola]['score'] += $pe_author['score'];
+        else {
+            $pe_author['score'] = doubleval($pe_author['score']);
+            $authors[$matricola] = $pe_author;
+        }
+    }
+
+    // Sort all authors according to descending score
+    usort($authors, function ($a, $b) { return ($a['score'] == $b['score']) ? 0 : (($a['score'] < $b['score']) ? 1 : -1); });
+
+    $keywords_id = pe_keywordsid_from_keywords($keywords, 'en');
+    $real_results = [];
+    $i = 0;
+    foreach ($authors as $author) {
+        $matricola = $author['matricola'];
+        if (! pe_check_keywords($matricola, $keywords_id)) continue;
+        $name = esse3_displayname_from_matricola($matricola);
+        if (! $name) continue;
+        $i += 1;
+        if ($i <= $start) continue;
+        $real_results[] = [ 'matricola' => $matricola, 'name' => $name, 'score' => $author['score'] ];
+        if ($i == $start + $limit) break;
+    }
+
+    // Only returns the required results, according to $start and $limit.
+    // This post-filtering is not very efficient. It might be merged with the previous
+    // foreach, so that additional informations is sought only for authors which are actually returned.
+    return $real_results;
 }
