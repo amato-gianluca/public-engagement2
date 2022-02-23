@@ -10,7 +10,7 @@ function encodeHTML(html){
         .innerHTML
 }
 
-function keywords_autocomplete (lang) {
+function keywords_autocomplete (lang = '') {
     let controller;
 
     return (e) => {

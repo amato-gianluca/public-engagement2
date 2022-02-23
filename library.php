@@ -593,11 +593,17 @@ function pe_keywordsid_from_keywords($keywords, $lang) {
 /**
  * Returns a list of keywords (both id and text) of a given language which begins with a given prefix.
  */
-function pe_keywords_from_lang_and_prefix($lang, $prefix = '') {
+function pe_keywords_from_lang_and_prefix($lang = '', $prefix = '') {
     global $pe;
-    $query = $pe -> prepare('SELECT id, keyword FROM keywords WHERE lang = ? AND keyword LIKE ? ORDER BY keyword ASC');
+
     $escapedprefix = addcslashes($prefix, '%_');
-    $result = $query -> execute([$lang, $escapedprefix . '%']);
+    if ($lang) {
+        $query = $pe -> prepare('SELECT id, keyword FROM keywords WHERE lang = ? AND keyword LIKE ? ORDER BY keyword ASC');
+        $result = $query -> execute([$lang, $escapedprefix . '%']);
+    } else {
+        $query = $pe -> prepare('SELECT id, keyword FROM keywords WHERE keyword LIKE ? ORDER BY keyword ASC');
+        $result = $query -> execute([$escapedprefix . '%']);
+    }
     return $query -> fetchAll();
 }
 

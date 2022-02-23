@@ -52,6 +52,6 @@ ready(function() {
     const tagify_keywords = new Tagify(keywords, {
         enforceWhitelist: true
     })
-    tagify_keywords.on('input', keywords_autocomplete('en'))
+    tagify_keywords.on('input', keywords_autocomplete())
     keywords.addEventListener('change', searchterms_change_listener)
 })
