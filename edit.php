@@ -25,7 +25,7 @@ if (isset($_POST['edit'])) {
 $pe_user = pe_researcher_from_id($userid);
 
 $username = $pe_user['username'];
-$esse3_user = esse3_docente_from_matricola($username);
+$esse3_displayname = esse3_displayname_from_matricola($username);
 $esse3_cv = esse3_cv_from_matricola($username);
 $esse3_role = esse3_role_from_matricola($username);
 
@@ -61,7 +61,7 @@ require_once 'templates/header.php';
 
                 <div class="row">
                     <div class="col-md-8">
-                        <span class="lead"><?= h($esse3_user['COGNOME']) ?> <?= h($esse3_user['NOME']) ?></span>
+                        <span class="lead"><?= h($esse3_displayname) ?> </span>
                         <br>
                         <?= h($esse3_role['DS_RUOLO']) ?>
                     </div>

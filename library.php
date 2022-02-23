@@ -144,74 +144,12 @@ function get_config($name) {
 }
 
 /**
- * Returns the list of teachers in a given department, ordered by cognome and nome.
- *
- * @param dip_id identifier of the department
- * @todo use the correct table in ESSE3 for this query
- */
-function esse3_docenti_from_department($department = '031313') {
-    global $esse3;
-
-    $query = $esse3 -> prepare('SELECT * FROM V_IE_RU_PERS_ATTIVO WHERE CD_AFF_ORG = ? ORDER BY COGNOME, NOME');
-    $result = $query -> execute([$department]);
-    return $query -> fetchAll();
-}
-
-/**
- * Returns true if the matricola number is associated to a tacher of the university, false otherwise.
- * If a person is recorded in CSA but she is not a teacher, it should return false.
- *
- * @param matricola matricola number of the teacher
- * @todo use the correct table in ESSE3 for this query
- */
-function esse3_check_docente_from_matricola($matricola) {
-    global $esse3;
-
-    $query = $esse3 -> prepare('SELECT 1 FROM DOCENTI WHERE MATRICOLA = ?');
-    $query -> execute([$matricola]);
-    return boolval($query -> fetch());
-}
-
-/**
- * Returns a teacher given its matricola number.  A field `displayname` is
- * added in the form 'nome cognome'.
- *
- * @param matricola matricola number of the teacher
- * @todo use the correct table in ESSE3 for this query
- */
-function esse3_docente_from_matricola($matricola) {
-    global $esse3;
-
-    $query = $esse3 -> prepare('SELECT CONCAT(NOME, " ", COGNOME) AS displayname FROM DOCENTI WHERE MATRICOLA = ?');
-    $query -> execute([$matricola]);
-    $result = $query->fetch();
-}
-
-/**
- * Returns a list of teachers given their matricola numbers.
- *
- * @param matricole list of matricola numbers for the teachers
- * @todo use the correct table in ESSE3 for this query
- */
-function esse3_docenti_from_matricole($matricole) {
-    // It can be used to speed-up repeated executions of esse3_docente_from_matricola, useful
-    // when the RTT between this web app and the ESSE3 mirror is high.
-    global $esse3;
-
-    $inQuery = implode(',', array_fill(0, count($matricole), '?'));
-    $query = $esse3 -> prepare('SELECT CONCAT(NOME, " ", COGNOME) AS displayname FROM DOCENTI WHERE MATRICOLA IN ('.$inQuery.')');
-    foreach ($matricole as $k => $matricola) {
-        $query->bindValue($k+1, $matricola);
-    }
-    $result = $query -> execute();
-    return $query->fetchAll();
-}
-
-/**
- * Returns the full name of a teacher given its matricola number.
+ * Returns the full name of a person, as recorded in ESSE3, given its matricola number. If the matricola
+ * number does not exists, or does not correspond to an internal staff member of the university, this
+ * function should return null.
  *
  * @param matricola matricola number
- * @todo use the correct table in ESSE3 for this query
+ * @todo find for the correct ESSE3 query
  */
 function esse3_displayname_from_matricola($matricola) {
     global $esse3;
@@ -219,7 +157,7 @@ function esse3_displayname_from_matricola($matricola) {
     $query = $esse3 -> prepare('SELECT CONCAT(NOME, " ", COGNOME) AS displayname FROM DOCENTI WHERE MATRICOLA = ?');
     $query -> execute([$matricola]);
     $result = $query -> fetch();
-    return $result['displayname'];
+    return $result ? $result['displayname'] :  null;
 }
 
 /**
@@ -245,7 +183,7 @@ function esse3_role_from_matricola($matricola) {
     global $esse3;
 
     $query = $esse3 -> prepare('SELECT * FROM V_IE_RU_PERS_ATTIVO WHERE MATRICOLA = ?');
-    $result = $query -> execute([$matricola]);
+    $query -> execute([$matricola]);
     return $query->fetch();
 }
 
@@ -317,29 +255,9 @@ function iris_items_from_crisid_with_score($crisId, $search, $year = 2015) {
 }
 
 /**
- * Returns the score of a specific item part for a given search query.
- *
- * @param id the MongoDB id of the item
- * @param search the search query
+ * Formats and displays an item taken from items table in IRIS.
  */
-function iris_score_from_itemid($id, $search) {
-    global $iris;
-    $item = $iris->items->findOne([
-        '_id' => $id,
-        '$text' => [ '$search' => $search, '$language' => 'en' ],
-    ], [
-        'projection' =>  [
-            'score' => [ '$meta' => 'textScore' ],
-            '_id' => 1,
-        ]
-    ]);
-    return $item ? $item['score'] : 0;
-}
-
-/**
- * Format an displays as item as returned from the items table in IRIS.
- */
-function iris_display_item($item) {
+function iris_item_display($item) {
     $l = $item['lookupValues'];
     $appeared = $item['collection']['id']== 23 ? "in {$l['book']}, " : '';
     $authors = $item['metadata']['dc/authority/people'];
@@ -482,7 +400,7 @@ function pe_id_from_username($username) {
 function pe_researcher_from_id($id) {
     global $pe;
     $query = $pe -> prepare('SELECT * FROM researchers WHERE id = ?');
-    $result = $query -> execute([$id]);
+    $query -> execute([$id]);
     $data = $query -> fetch();
 
     $query = $pe -> prepare(<<<SQL
@@ -491,7 +409,7 @@ function pe_researcher_from_id($id) {
         WHERE rk.id_researcher = ?
         ORDER BY pos;
     SQL);
-    $result = $query -> execute([$data['id']]);
+    $query -> execute([$data['id']]);
     $keywords = $query -> fetchAll();
 
     $keywords_en = array_map(
@@ -531,7 +449,7 @@ function pe_researchers_from_all_keywords($keywords) {
         JOIN keywords k ON k.id = rk.id_keyword
         HAVING JSON_CONTAINS(kwords, '[ "artificial intelligence" ]')
     SQL);
-    $result = $query -> execute([]);
+    $query -> execute([]);
     return $query -> fetchAll();
 }
 
@@ -551,7 +469,7 @@ function pe_researchers_from_any_keyword($keywords) {
         GROUP BY r.username
         ORDER BY score DESC
     SQL);
-    $result = $query -> execute([$keywords_list]);
+    $query -> execute([$keywords_list]);
     return $query -> fetchAll();
 }
 
@@ -562,8 +480,7 @@ function pe_researchers_from_any_keyword($keywords) {
 function pe_researcher_create($username) {
     global $pe;
     $query = $pe -> prepare('INSERT INTO researchers (username) VALUES (?)');
-    $result = $query -> execute([$username]);
-    return $result;
+    return $query -> execute([$username]);
 }
 
 /**
@@ -600,10 +517,10 @@ function pe_keywords_from_lang_and_prefix($lang = '', $prefix = '') {
     $escapedprefix = addcslashes($prefix, '%_');
     if ($lang) {
         $query = $pe -> prepare('SELECT id, keyword FROM keywords WHERE lang = ? AND keyword LIKE ? ORDER BY keyword ASC');
-        $result = $query -> execute([$lang, $escapedprefix . '%']);
+        $query -> execute([$lang, $escapedprefix . '%']);
     } else {
         $query = $pe -> prepare('SELECT id, keyword FROM keywords WHERE keyword LIKE ? ORDER BY keyword ASC');
-        $result = $query -> execute([$escapedprefix . '%']);
+        $query -> execute([$escapedprefix . '%']);
     }
     return $query -> fetchAll();
 }
@@ -625,7 +542,7 @@ function pe_check_keywords($username, $keywords_id) {
     global $pe;
     if (empty($keywords_id)) return true;
     $query = $pe -> prepare('SELECT rk.id_keyword FROM researchers r JOIN researcher_keywords rk ON r.id = rk.id_researcher WHERE r.username = ?');
-    $result = $query -> execute([$username]);
+    $query -> execute([$username]);
     $keywords = [];
     while ($k = $query -> fetch()) {
         $keywords[] = intval($k['id_keyword']);
@@ -644,8 +561,7 @@ function pe_check_keywords($username, $keywords_id) {
 function pe_researcher_associate_keyword($researcher_id, $keyword_id, $pos) {
     global $pe;
     $query = $pe -> prepare('INSERT INTO researcher_keywords VALUES (?, ?, ?)');
-    $result = $query -> execute([$researcher_id, $keyword_id, $pos]);
-    return $result;
+    return $query -> execute([$researcher_id, $keyword_id, $pos]);
 }
 
 /**
@@ -655,8 +571,7 @@ function pe_researcher_associate_keyword($researcher_id, $keyword_id, $pos) {
 function pe_researcher_delete_keywords($researcher_id) {
     global $pe;
     $query = $pe -> prepare('DELETE FROM researcher_keywords WHERE id_researcher = ?');
-    $result = $query -> execute([$researcher_id]);
-    return $result;
+    return $query -> execute([$researcher_id]);
 }
 
 /**
@@ -761,8 +676,7 @@ function pe_search($search, $start=0, $limit=20) {
 function pe_search_keywords($keywords) {
     $researchers = pe_researchers_from_any_keyword($keywords);
     foreach ($researchers as &$researcher) {
-        $name = esse3_displayname_from_matricola($researcher['username']);
-        $researcher['name'] = $name;
+        $researcher['name'] = esse3_displayname_from_matricola($researcher['username']);
         $researcher['score'] = doubleval($researcher['score']);
     }
     return $researchers;

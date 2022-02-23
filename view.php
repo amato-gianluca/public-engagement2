@@ -143,7 +143,7 @@ require_once 'templates/header.php';
                             $scores[$paper['itemId']] = $paper['score'];
                             ?>
                             <li class="list-group-item">
-                                <?php iris_display_item($paper) ?>
+                                <?php iris_item_display($paper) ?>
                             </li>
                         <?php } ?>
                         </ul>
@@ -152,7 +152,7 @@ require_once 'templates/header.php';
                         <?php foreach ($iris_papers as $paper) { ?>
                             <?php if (array_key_exists($paper['itemId'], $scores)) continue; ?>
                             <li class="list-group-item">
-                                <?php iris_display_item($paper) ?>
+                                <?php iris_item_display($paper) ?>
                             </li>
                         <?php } ?>
                         </ul>
