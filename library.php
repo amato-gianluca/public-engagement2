@@ -321,31 +321,25 @@ function iris_search($search, $keywords, $start=0, $limit=20) {
     global $iris;
 
     // Return items (items) relevant to the search
-    $items = $iris->items->find([
-        '$text' => [ '$search' => $search, '$language' => 'en' ],
-        'lookupValues.year' => [ '$gte' => strval(2015) ],
-    ], [
-        'projection' =>  [
-            'score' => [ '$meta' => 'textScore' ],
-            'internalAuthors' => 1,
+    $authors = $iris->items->aggregate([
+        [
+            '$match' => [
+                '$text' => [ '$search' => $search, '$language' => 'en' ],
+                'lookupValues.year' => [ '$gte' => strval(2015) ]
+            ]
+        ], [
+            '$project' =>  [
+                'score' => [ '$meta' => 'textScore' ],
+                'internalAuthors' => 1,
+            ]
+        ], [
+            '$unwind' => '$internalAuthors'
+        ], [
+            '$group' => [ '_id' => '$internalAuthors.authority', 'score' => [ '$sum' => '$score' ] ]
+        ], [
+            '$sort' =>  [ 'score' => -1 ]
         ]
     ]);
-
-    // Group items according to internal authors. For each author, computes the sum of all the scores of its items.
-    $results = [ ];
-    foreach  ($items as $item) {
-        $authors = $item['internalAuthors'];
-        foreach ($authors as &$author) {
-            $crisId = $author['authority'];
-            if (! array_key_exists($crisId, $results)) {
-                $results[$crisId] = [ /* 'name' => $author['author'],  */ 'crisId' => $crisId, 'score' => 0.0 ];
-            }
-            $results[$crisId]['score'] += $item['score'];
-        }
-    }
-
-    // Sorts authors according to total score
-    usort($results, function ($a, $b) { return ($a['score'] == $b['score']) ? 0 : (($a['score'] < $b['score']) ? 1 : -1); });
 
     // Copy in $real_results the data to be returned to the user. We cannot simply return the results from $start to
     // $start + $limit since there are some people listed as internalAuthors in  item (see rp46750) simply because they
@@ -357,20 +351,16 @@ function iris_search($search, $keywords, $start=0, $limit=20) {
     $keywords_id = pe_keywordsid_from_keywords($keywords, 'en');
     $real_results = [];
     $i = 0;
-    foreach ($results as &$author) {
-        $crisId = $author['crisId'];
+    foreach ($authors as $author) {
+        $crisId = $author['_id'];
         $matricola = iris_matricola_from_crisid($crisId);
         if (! $matricola) continue;
         if (! pe_check_keywords($matricola, $keywords_id)) continue;
         $name = esse3_displayname_from_matricola($matricola);
         if (! $name) continue;
-
         $i += 1;
         if ($i <= $start) continue;
-
-        $author['name'] = $name;
-        $author['matricola'] = $matricola;
-        $real_results[] = $author;
+        $real_results[] = [ 'crisId' => $crisId, 'matricola' => $matricola, 'name' => $name, 'score' => $author['score'] ];
         if ($i == $start + $limit) break;
     }
 
