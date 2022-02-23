@@ -338,7 +338,29 @@ function iris_search($search, $keywords, $start=0, $limit=20) {
             '$group' => [ '_id' => '$internalAuthors.authority', 'score' => [ '$sum' => '$score' ] ]
         ], [
             '$sort' =>  [ 'score' => -1 ]
+        ], [
+            '$lookup' => [ 'from' => 'authors', 'localField' => '_id', 'foreignField' => 'crisId', 'as' => 'identifiers', 'pipeline' => [
+                [
+                    '$project' => [
+                        'crisId' => 1,
+                        'gaSourceIdentifiers' => 1
+                    ],
+                ], [
+                    '$unwind' => '$gaSourceIdentifiers'
+                ], [
+                    '$match' => [
+                        'gaSourceIdentifiers.sourceTable' => 'UGOV.CSA.PERSON'
+                    ]
+                ]
+            ]]
+        ], [
+            '$project' => [
+                '_id' => 1,
+                'score' => 1,
+                'matricola' => [ '$first' => '$identifiers.gaSourceIdentifiers.sourceId' ]
+            ]
         ]
+
     ]);
 
     // Copy in $real_results the data to be returned to the user. We cannot simply return the results from $start to
@@ -353,14 +375,13 @@ function iris_search($search, $keywords, $start=0, $limit=20) {
     $i = 0;
     foreach ($authors as $author) {
         $crisId = $author['_id'];
-        $matricola = iris_matricola_from_crisid($crisId);
-        if (! $matricola) continue;
+        $matricola = $author['matricola'];
         if (! pe_check_keywords($matricola, $keywords_id)) continue;
         $name = esse3_displayname_from_matricola($matricola);
         if (! $name) continue;
         $i += 1;
         if ($i <= $start) continue;
-        $real_results[] = [ 'crisId' => $crisId, 'matricola' => $matricola, 'name' => $name, 'score' => $author['score'] ];
+        $real_results[] = [ 'crisId' => $crisId, 'matricola' => $matricola, 'name' => $name, 'score' => $author['score']];
         if ($i == $start + $limit) break;
     }
 
