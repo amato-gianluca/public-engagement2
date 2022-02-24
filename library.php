@@ -37,16 +37,16 @@ $iris = (new MongoDB\Client($iris_dsn))->iris;
 
 // Utility functions
 
-function h($text) {
+function h(string $text): string {
     return htmlspecialchars($text);
 }
 
-function redirect_browser($url) {
+function redirect_browser(string $url): never {
     header("Location: $url");
     die();
 }
 
-function list_to_tagify($list) {
+function list_to_tagify(array $list): string {
     $tags = [];
     foreach ($list as $item) {
         $obj = [ 'value' => $item ];
@@ -57,8 +57,7 @@ function list_to_tagify($list) {
 
 // Error handling
 
-function map_error_code ($errno) {
-    $error = $log = null;
+function map_error_code (int $errno): string {
     switch ($errno) {
         case E_PARSE:
         case E_ERROR:
@@ -85,12 +84,12 @@ function map_error_code ($errno) {
             $error = 'Deprecated';
             break;
         default :
-            break;
+            $error = 'Unknown error number';
     }
     return $error;
 }
 
-function exception_handler($ex) {
+function exception_handler(Throwable $ex): void {
     ob_clean();
     if (get_config('ERROR_MODE')=='debug') { ?>
         <b>Uncaught exception</b>
@@ -102,7 +101,7 @@ function exception_handler($ex) {
     die();
 }
 
-function error_handler($errno, $errstr, $errfile, $errline) {
+function error_handler(int $errno, string $errstr, string $errfile, int $errline): bool {
     ob_clean();
     if (get_config('ERROR_MODE')=='debug') { ?>
         <b><?= map_error_code($errno) ?>:</b> <?= h($errstr) ?> in <?= h($errfile) ?> on line <?= h($errline) ?>
@@ -127,7 +126,7 @@ function error_handler($errno, $errstr, $errfile, $errline) {
  * @todo memoize the results, so that file access is not repeated at each call
  */
 
-function get_config($name) {
+function get_config($name): string {
     // get the configuration parameter $NAME either by environment variables or local constants
     if (defined($name))
         return constant($name);
@@ -151,7 +150,7 @@ function get_config($name) {
  * @param matricola matricola number
  * @todo find for the correct ESSE3 query
  */
-function esse3_displayname_from_matricola($matricola) {
+function esse3_displayname_from_matricola(string $matricola): ?string {
     global $esse3;
 
     $query = $esse3 -> prepare('SELECT CONCAT(NOME, " ", COGNOME) AS name FROM DOCENTI WHERE MATRICOLA = ?');
@@ -165,7 +164,7 @@ function esse3_displayname_from_matricola($matricola) {
  *
  * @param matricola matricola number
  */
-function esse3_cv_from_matricola($matricola) {
+function esse3_cv_from_matricola(string $matricola): ?array {
     global $esse3;
 
     $query = $esse3 -> prepare('SELECT * FROM CV_PERSONE WHERE MATRICOLA = ?');
@@ -179,7 +178,7 @@ function esse3_cv_from_matricola($matricola) {
  * @param matricola matricola number
  * @todo use the correct table in ESSE3 for this query
  */
-function esse3_role_from_matricola($matricola) {
+function esse3_role_from_matricola(string $matricola): ?array {
     global $esse3;
 
     $query = $esse3 -> prepare('SELECT * FROM V_IE_RU_PERS_ATTIVO WHERE MATRICOLA = ?');
@@ -191,7 +190,7 @@ function esse3_role_from_matricola($matricola) {
  * Returns the matricola corresponding to a crisId (identifier for the author table in IRIS). If
  * the given crisId does not exists, or there is no corresponding matricola number, it returns null.
  */
-function iris_matricola_from_crisid($crisId) {
+function iris_matricola_from_crisid(string $crisId): ?string {
     global $iris;
 
     // sebbene anche il campo userSet.username contenga il numero di matricola, non è presente sempre
@@ -208,7 +207,7 @@ function iris_matricola_from_crisid($crisId) {
  * author in iris for a given matricola number. If the given matricola numbers is not found in the author
  * table of IRIS, it returns null.
  */
-function iris_crisid_from_matricola($matricola) {
+function iris_crisid_from_matricola(string $matricola): ?string {
     global $iris;
     $author = $iris->authors->findOne(['gaSourceIdentifiers.sourceId' => $matricola], ['projection' => ['crisId' => 1]]);
     return $author ? $author['crisId'] : null;
@@ -220,7 +219,7 @@ function iris_crisid_from_matricola($matricola) {
  * @param crisId crisId of (one of the) author of the returned items
  * @param year only returns items published after the specified year (default 2015)
  */
-function iris_items_from_crisid($crisId, $year = 2015) {
+function iris_items_from_crisid(string $crisId, int $year = 2015): MongoDB\Driver\Cursor {
     global $iris;
     $items = $iris->items->find([
         'internalAuthors.authority' => $crisId,
@@ -239,7 +238,7 @@ function iris_items_from_crisid($crisId, $year = 2015) {
  * @param search the search query
  * @param year only returns items published after the specified year (default 2015)
  */
-function iris_items_from_crisid_with_score($crisId, $search, $year = 2015) {
+function iris_items_from_crisid_with_score(string $crisId, string $search, int $year = 2015) {
     global $iris;
     $items = $iris->items->find([
         '$text' => [ '$search' => $search, '$language' => 'en' ],
@@ -257,7 +256,7 @@ function iris_items_from_crisid_with_score($crisId, $search, $year = 2015) {
 /**
  * Formats and displays an item taken from items table in IRIS.
  */
-function iris_item_display($item) {
+function iris_item_display(MongoDB\Model\BSONDocument $item): void {
     $l = $item['lookupValues'];
     $appeared = $item['collection']['id']== 23 ? "in {$l['book']}, " : '';
     $authors = $item['metadata']['dc/authority/people'];
@@ -315,7 +314,7 @@ function iris_item_display($item) {
  * is computed, and each auhtor is assiged a score which is the sum of the scores of its papers. The
  * result is ordered by decenfing order of score and a matricola number is associated when available.
  */
-function iris_authors_search($query) {
+function iris_authors_search(string $query):  MongoDB\Driver\Cursor {
     global $iris;
 
     // Return items (items) relevant to the search
@@ -371,7 +370,7 @@ function iris_authors_search($query) {
  * such an researcher does not exists.
  * @todo in many places we assume the Shibboleth usernames are matricola numbers.
  */
-function pe_id_from_username($username) {
+function pe_id_from_username(string $username): ?int {
     global $pe;
     $query = $pe -> prepare('SELECT id FROM researchers WHERE username = ?');
     $query -> execute([$username]);
@@ -383,7 +382,7 @@ function pe_id_from_username($username) {
  * Returns all the data of a researcher given its id. Keywords are returned as a list
  * of english and italian keywords, without reference to their internal id numbers.
  */
-function pe_researcher_from_id($id) {
+function pe_researcher_from_id(int $id): array {
     global $pe;
     $query = $pe -> prepare('SELECT * FROM researchers WHERE id = ?');
     $query -> execute([$id]);
@@ -416,7 +415,7 @@ function pe_researcher_from_id($id) {
 /**
  * Returns a list of all researchers who have a given keyword id.
  */
-function pe_researcher_from_keywordid($keyword_id) {
+function pe_researcher_from_keywordid(int $keyword_id): array {
     global $pe;
     $query = $pe -> prepare('SELECT * FROM researchers r JOIN researcher_keywords rk ON r.id = rk.id_researcher WHERE rk.id_keyword = ?');
     $result = $query -> execute([$keyword_id]);
@@ -427,7 +426,7 @@ function pe_researcher_from_keywordid($keyword_id) {
  * Returns a list of all researchers who have any of the keyword in $keywords,
  * in descending order according to the number of keywords.
  */
-function pe_researchers_from_keywords($keywords) {
+function pe_researchers_from_keywords(array $keywords): array {
     global $pe;
     $keywords_list = implode(',', $keywords);
     $query = $pe -> prepare(<<<SQL
@@ -447,7 +446,7 @@ function pe_researchers_from_keywords($keywords) {
  * Creates a blank researcher with a given username. Returns the result of the operation
  * Returns true on success or false on failure. k.keyword MEMBER OF ('[ "artificial intelligence" ]')
  */
-function pe_researcher_create($username) {
+function pe_researcher_create(string $username): bool {
     global $pe;
     $query = $pe -> prepare('INSERT INTO researchers (username) VALUES (?)');
     return $query -> execute([$username]);
@@ -457,7 +456,7 @@ function pe_researcher_create($username) {
  * Returns the keyword id corresponding to a given keyword (a pair of the actual keyword and the language).
  * Returns null if there is not such a keyword.
  */
-function pe_keywordid_from_keyword($keyword, $lang) {
+function pe_keywordid_from_keyword(string $keyword, string $lang): ?int {
     global $pe;
     $query = $pe -> prepare('SELECT id FROM keywords WHERE keyword = ? AND lang = ?');
     $query -> execute([$keyword, $lang]);
@@ -468,7 +467,7 @@ function pe_keywordid_from_keyword($keyword, $lang) {
 /**
  * Returns a list of keywords (both id and text) of a given language which begins with a given prefix.
  */
-function pe_keywords_from_lang_and_prefix($lang = '', $prefix = '') {
+function pe_keywords_from_lang_and_prefix(string $lang = '', string $prefix = ''): array {
     global $pe;
 
     $escapedprefix = addcslashes($prefix, '%_');
@@ -485,7 +484,7 @@ function pe_keywords_from_lang_and_prefix($lang = '', $prefix = '') {
 /**
  * Creates a new keyword (specified by text and language) and returns its id.
  */
-function pe_keyword_create($keyword, $lang) {
+function pe_keyword_create(string $keyword, string $lang): int {
     global $pe;
     $query = $pe -> prepare('INSERT INTO keywords (keyword, lang) VALUES (?, ?)');
     $query -> execute([$keyword, $lang]);
@@ -500,7 +499,7 @@ function pe_keyword_create($keyword, $lang) {
  * @param pos position where keyword_id is inserted in the list of keywords
  * @todo better make a different function which associated all keywords in the same time
  */
-function pe_researcher_associate_keyword($researcher_id, $keyword_id, $pos) {
+function pe_researcher_associate_keyword(int $researcher_id, int $keyword_id, int $pos): bool {
     global $pe;
     $query = $pe -> prepare('INSERT INTO researcher_keywords VALUES (?, ?, ?)');
     return $query -> execute([$researcher_id, $keyword_id, $pos]);
@@ -510,7 +509,7 @@ function pe_researcher_associate_keyword($researcher_id, $keyword_id, $pos) {
  * Remove all keywords associated to a given researcher.
  * Returns true on success or false on failure.
  */
-function pe_researcher_delete_keywords($researcher_id) {
+function pe_researcher_delete_keywords(int $researcher_id): bool {
     global $pe;
     $query = $pe -> prepare('DELETE FROM researcher_keywords WHERE id_researcher = ?');
     return $query -> execute([$researcher_id]);
@@ -524,7 +523,7 @@ function pe_researcher_delete_keywords($researcher_id) {
  * @param keywords_it list of italian keywords to be associated with the researcher
  * @param data new data for the research, with the expection of the keywords
  */
-function pe_researcher_edit($researcher_id, $keywords_en, $keywords_it, $data) {
+function pe_researcher_edit(int $researcher_id, array $keywords_en, array $keywords_it, array $data): bool {
     global $pe;
 
     $query = $pe -> prepare(<<<SQL
@@ -568,13 +567,14 @@ function pe_researcher_edit($researcher_id, $keywords_en, $keywords_it, $data) {
  * Returns the researchers in the pe database which satisfy a given full-text query. The list of researchers is put
  * in descending order by score.
  */
-function pe_researchers_search($search) {
+function pe_researchers_search(string $search): array {
     global $pe;
 
     $query = $pe -> prepare(<<<SQL
         SELECT
           username,
-          MATCH (keywords_en,interests_en,demerging_en,position_en,awards_en,curriculum_en,keywords_it,interests_it,demerging_it,position_it,awards_it,curriculum_it) AGAINST (? IN NATURAL LANGUAGE MODE) AS score
+          MATCH (keywords_en,interests_en,demerging_en,position_en,awards_en,curriculum_en,keywords_it,interests_it,demerging_it,position_it,awards_it,curriculum_it)
+                AGAINST (? IN NATURAL LANGUAGE MODE) AS score
         FROM researchers
         HAVING score > 0
         ORDER BY score DESC
@@ -588,7 +588,7 @@ function pe_researchers_search($search) {
  * pe_researchers_from_keywords. Each result is an associative array with three members:
  * matricola (string), name (string) and score (double). Results are ordered decreseangly according to score.
  */
-function search($search, $keywords, $start=0, $limit=20) {
+function search(string $search, array $keywords, int $start=0, int $limit=20): array {
     $authors = [];
 
     $iris_authors = iris_authors_search($search);
