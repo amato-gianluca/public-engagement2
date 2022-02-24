@@ -673,12 +673,22 @@ function search(string $search, array $keywords, int $start=0, int $limit=20): a
 }
 
 function highlight_text(string $text, array $parsed): string {
-    $re = implode("|",$parsed['in'] + $parsed['optional']);
+    $re = '';
+    $first = true;
+    foreach ($parsed['optional'] as $s) {
+        if (! $first) $re .= '|';
+        $re .= '\b' . preg_quote($s, '/') . '\b';
+        $first = false;
+    }
+    $boundary = count($parsed['optional']) == 0;
+    foreach ($parsed['in'] as $s) {
+        if (! $first) $re .= '|';
+        $re .= ($boundary ? '\b' :'') . preg_quote($s, '/') . ($boundary ? '\b' :'');
+        $first = false;
+    }
     $matches = [];
     preg_match_all('/'.$re.'/', $text, $matches, PREG_OFFSET_CAPTURE | PREG_PATTERN_ORDER);
-    $full_matches = $matches[0];
-    usort($full_matches, fn ($a, $b) => $b[1] <=> $a[1]);
-    print_r($re);
+    $full_matches = array_reverse($matches[0]);
     $result = $text;
     foreach ($full_matches as $match) {
         $len = strlen($match[0]);
