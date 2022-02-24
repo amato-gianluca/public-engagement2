@@ -43,3 +43,7 @@
 .text-toggle[aria-expanded=true] .text-collapsed {
   display: none;
 }
+
+.highlighted {
+  color: red;
+}

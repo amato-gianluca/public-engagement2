@@ -21,6 +21,7 @@ if ($matricola) {
 }
 
 $search = $_GET['search'] ?? '';
+$parsed_search = query_parse($search);
 
 if ($iris_username) {
     $iris_papers = iris_items_from_crisid($iris_username);
@@ -143,7 +144,7 @@ require_once 'templates/header.php';
                             $scores[$paper['itemId']] = $paper['score'];
                             ?>
                             <li class="list-group-item">
-                                <?php iris_item_display($paper) ?>
+                                <?php iris_item_display($paper, $parsed_search) ?>
                             </li>
                         <?php } ?>
                         </ul>

@@ -297,7 +297,7 @@ function iris_items_from_crisid_with_score(string $crisId, string $search, int $
 /**
  * Formats and displays an item taken from items table in IRIS.
  */
-function iris_item_display(MongoDB\Model\BSONDocument $item): void {
+function iris_item_display(MongoDB\Model\BSONDocument $item, ?array $parsed_search = null): void {
     $l = $item['lookupValues'];
     $appeared = $item['collection']['id']== 23 ? "in {$l['book']}, " : '';
     $authors = $item['metadata']['dc/authority/people'];
@@ -343,7 +343,7 @@ function iris_item_display(MongoDB\Model\BSONDocument $item): void {
             <?php }  ?>
         </div>
         <div id="abstract-<?= h($item['itemId']) ?>" class="collapse">
-            <?= h($abstract) ?>
+            <?= $parsed_search ? highlight_text(h($abstract), $parsed_search) : h($abstract) ?>
         </div>
     </div>
     <?php } ?>
@@ -670,4 +670,20 @@ function search(string $search, array $keywords, int $start=0, int $limit=20): a
     }
 
     return $real_results;
+}
+
+function highlight_text(string $text, array $parsed): string {
+    $re = implode("|",$parsed['in'] + $parsed['optional']);
+    $matches = [];
+    preg_match_all('/'.$re.'/', $text, $matches, PREG_OFFSET_CAPTURE | PREG_PATTERN_ORDER);
+    $full_matches = $matches[0];
+    usort($full_matches, fn ($a, $b) => $b[1] <=> $a[1]);
+    print_r($re);
+    $result = $text;
+    foreach ($full_matches as $match) {
+        $len = strlen($match[0]);
+        $pos = $match[1];
+        $result = substr($result, 0, $pos) . '<span class="highlighted">' . substr($result, $pos, $len) . '</span>' . substr($result, $pos + $len);
+    }
+    return $result;
 }
