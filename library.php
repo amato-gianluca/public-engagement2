@@ -55,6 +55,47 @@ function list_to_tagify(array $list): string {
     return json_encode($tags);
 }
 
+/**
+ * Given a query string in the syntax of MongoDB full-text search, decompose it into
+ * two arrays of strings: positive strings (which we want to appear in the document),  negative
+ * strings (which we do not want to appear in documents) and optional strings (which increase
+ * score when they appear in a document).
+ *
+ * @todo tokenization approximates the rules used in MongoDB
+ */
+function query_parse(string $query): array {
+    $split_on_quotes = preg_split('/"/', $query);
+    $inside_quotes = false;
+    $negated = false;
+    $positives = [];
+    $negatives = [];
+    $optionals = [];
+    foreach ($split_on_quotes as $s) {
+        if ($inside_quotes) {
+            $positives[] = $s;
+            $inside_quotes = false;
+        } else {
+            $split_on_spaces = preg_split('/(-)|\pZ|\pP|\p{Cc}/u', $s, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
+            foreach ($split_on_spaces as $ss) {
+                if ($ss == '-') {
+                    $negated  = true;
+                    continue;
+                }
+                if ($negated) {
+                    $negatives[] = $ss;
+                } else {
+                    $optionals[] = $ss;
+                }
+                if ($ss != '-') {
+                    $negated = false;
+                }
+            }
+            $inside_quotes = true;
+        }
+    }
+    return ["optional" => $optionals, "in" => $positives, "out" => $negatives];
+}
+
 // Error handling
 
 function map_error_code (int $errno): string {
@@ -565,7 +606,9 @@ function pe_researcher_edit(int $researcher_id, array $keywords_en, array $keywo
 
 /**
  * Returns the researchers in the pe database which satisfy a given full-text query. The list of researchers is put
- * in descending order by score.
+ * in descending order by score. The original idea was to simulate MongoDB full-text search with MariaDB full-text search
+ * in boolean mode, but this does not appeat to be possible. Therefore, we just implemente research in the pe database
+ * with natural language mode.
  */
 function pe_researchers_search(string $search): array {
     global $pe;
@@ -576,10 +619,11 @@ function pe_researchers_search(string $search): array {
           MATCH (keywords_en,interests_en,demerging_en,position_en,awards_en,curriculum_en,keywords_it,interests_it,demerging_it,position_it,awards_it,curriculum_it)
                 AGAINST (? IN NATURAL LANGUAGE MODE) AS score
         FROM researchers
-        HAVING score > 0
+        WHERE MATCH (keywords_en,interests_en,demerging_en,position_en,awards_en,curriculum_en,keywords_it,interests_it,demerging_it,position_it,awards_it,curriculum_it)
+              AGAINST (? IN NATURAL LANGUAGE MODE)
         ORDER BY score DESC
     SQL);
-    $query -> execute([$search]);
+    $query -> execute([$search, $search]);
     return $query -> fetchAll();
 }
 
