@@ -74,25 +74,25 @@ require_once 'templates/header.php';
                         <div class="card mb-1">
                             <div class="card-body">
                                 <h5 class="card-title">Interessi</h5>
-                                <p class="card-text"> <?= h($pe_user['interests_it']) ?></p>
+                                <p class="card-text"> <?= highlight_text(h($pe_user['interests_it']), $parsed_search) ?></p>
                             </div>
                         </div>
                         <div class="card mb-1">
                             <div class="card-body">
                                 <h5 class="card-title">Spin-off e brevetti</h5>
-                                <p class="card-text"><?= h($pe_user['interests_it']) ?></p>
+                                <p class="card-text"><?= highlight_text(h($pe_user['interests_it']), $parsed_search) ?></p>
                             </div>
                         </div>
                         <div class="card mb-1">
                             <div class="card-body">
                                 <h5 class="card-title">Premi e onorificenze</h5>
-                                <p class="card-text"><?= h($pe_user['awards_it']) ?></p>
+                                <p class="card-text"><?= highlight_text(h($pe_user['awards_it']), $parsed_search) ?></p>
                             </div>
                         </div>
                         <div class="card mb-1">
                             <div class="card-body">
                                 <h5 class="card-title">Curriculum</h5>
-                                <p class="card-text"> <?= h($pe_user['curriculum_it']) ?></p>
+                                <p class="card-text"> <?= highlight_text(h($pe_user['curriculum_it']), $parsed_search) ?></p>
                                 <?php if ($esse3_cv['CV_IT_URL']) { ?>
                                 <a href="<?= h($esse3_cv['CV_IT_URL']) ?>" class="card-link" target="_blank">Scarica curriculum completo</a>
                                 <?php } ?>
@@ -111,25 +111,25 @@ require_once 'templates/header.php';
                         <div class="card mb-1">
                             <div class="card-body">
                                 <h5 class="card-title">Research Interests and Expertise</h5>
-                                <p class="card-text"> <?= h($pe_user['interests_en']) ?></p>
+                                <p class="card-text"> <?= highlight_text(h($pe_user['interests_en']), $parsed_search) ?></p>
                             </div>
                         </div>
                         <div class="card mb-1">
                             <div class="card-body">
                                 <h5 class="card-title">Spin-off &amp; patents</h5>
-                                <p class="card-text"><?= h($pe_user['interests_en']) ?></p>
+                                <p class="card-text"><?= highlight_text(h($pe_user['interests_en']), $parsed_search) ?></p>
                             </div>
                         </div>
                         <div class="card mb-1">
                             <div class="card-body">
                                 <h5 class="card-title">Acadmic Honorary Assignments and Awards</h5>
-                                <p class="card-text"><?= h($pe_user['awards_en']) ?></p>
+                                <p class="card-text"><?= highlight_text(h($pe_user['awards_en']), $parsed_search) ?></p>
                             </div>
                         </div>
                         <div class="card mb-1">
                             <div class="card-body">
                                 <h5 class="card-title">Curriculum</h5>
-                                <p class="card-text"> <?= h($pe_user['curriculum_en']) ?></p>
+                                <p class="card-text"> <?= highlight_text(h($pe_user['curriculum_en']), $parsed_search) ?></p>
                                 <?php if ($esse3_cv['CV_EN_URL']) { ?>
                                 <a href="<?= h($esse3_cv['CV_EN_URL']) ?>" class="card-link" target="_blank">Download full curriculum</a>
                                 <?php } ?>

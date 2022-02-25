@@ -45,5 +45,8 @@
 }
 
 .highlighted {
-  color: red;
+  padding-left: 4px;
+  padding-right: 4px;
+  background-color: pink;
+  border-radius: 20px;
 }

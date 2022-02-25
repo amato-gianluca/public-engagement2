@@ -318,7 +318,7 @@ function iris_item_display(MongoDB\Model\BSONDocument $item, ?array $parsed_sear
     <?php if ($handle) { ?>
     <a href="https://ricerca.unich.it/handle/<?= h($handle) ?>" target="_blank">
     <?php } ?>
-      <?= h($l['title']) ?>
+      <?= highlight_text(h($l['title']), $parsed_search) ?>
     <?php if ($handle) { ?>
     </a>
     <?php } ?>
@@ -343,7 +343,7 @@ function iris_item_display(MongoDB\Model\BSONDocument $item, ?array $parsed_sear
             <?php }  ?>
         </div>
         <div id="abstract-<?= h($item['itemId']) ?>" class="collapse">
-            <?= $parsed_search ? highlight_text(h($abstract), $parsed_search) : h($abstract) ?>
+            <?= highlight_text(h($abstract), $parsed_search) ?>
         </div>
     </div>
     <?php } ?>
@@ -672,7 +672,8 @@ function search(string $search, array $keywords, int $start=0, int $limit=20): a
     return $real_results;
 }
 
-function highlight_text(string $text, array $parsed): string {
+function highlight_text(string $text, ?array $parsed): string {
+    if (is_null($parsed)) return $text;
     $re = '';
     $first = true;
     foreach ($parsed['optional'] as $s) {
@@ -686,6 +687,7 @@ function highlight_text(string $text, array $parsed): string {
         $re .= ($boundary ? '\b' :'') . preg_quote($s, '/') . ($boundary ? '\b' :'');
         $first = false;
     }
+    if ($re == '') return $text;
     $matches = [];
     preg_match_all('/'.$re.'/', $text, $matches, PREG_OFFSET_CAPTURE | PREG_PATTERN_ORDER);
     $full_matches = array_reverse($matches[0]);
