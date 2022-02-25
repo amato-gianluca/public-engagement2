@@ -1,6 +1,6 @@
-let timer;
+let timer, search_field, keywords_field, tagify_keywords_field
 
-function searchterms_change_listener() {
+function search_change_listener() {
     document.getElementById('researchers_list').innerHTML = `
         <div class="spinner-border" role="status">
             <span class="sr-only">Loading...</span>
@@ -11,8 +11,8 @@ function searchterms_change_listener() {
 }
 
 async function searchterms_update() {
-    const search = document.getElementById('searchterms').value
-    const keywords =document.getElementById('keywords').value
+    const search = search_field.value
+    const keywords = keywords_field.value
     const searchParams = new URLSearchParams({ search: search, keywords: keywords })
     const results_raw = await fetch('api/search.php?' + searchParams)
     const results = await results_raw.json()
@@ -41,17 +41,25 @@ async function searchterms_update() {
     } else {
         researchers_list.innerHTML = '<div class="alert alert-dark" role="alert">Nessun risultato trovato</div>'
     }
+    window.history.replaceState({ "search": search, "keywords": tagify_keywords_field.value }, '')
 }
 
 ready(function() {
-    const searchTerms = document.getElementById('searchterms')
-    searchTerms.addEventListener('input',searchterms_change_listener)
-    searchTerms.dispatchEvent(new Event('input'));
+    search_field = document.getElementById('searchterms')
+    keywords_field = document.getElementById('keywords')
+    tagify_keywords_field = new Tagify(keywords_field)
 
-    const keywords = document.getElementById('keywords');
-    const tagify_keywords = new Tagify(keywords, {
-        enforceWhitelist: true
-    })
-    tagify_keywords.on('input', keywords_autocomplete())
-    keywords.addEventListener('change', searchterms_change_listener)
+    const history = window.history.state
+    if (history) {
+        search_field.value = history.search
+        tagify_keywords_field.addTags(history.keywords)
+    }
+
+    search_field.addEventListener('input',search_change_listener)
+
+    tagify_keywords_field.settings.enforceWhitelist = true
+    tagify_keywords_field.on('input', keywords_autocomplete())
+    keywords_field.addEventListener('change', search_change_listener)
+
+    search_field.dispatchEvent(new Event('input'))
 })

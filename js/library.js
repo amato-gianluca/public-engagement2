@@ -29,11 +29,14 @@ function keywords_autocomplete (lang = '') {
             lang: lang,
             value: value,
         })
-        fetch('api/autocomplete.php?' + parameters, { signal:controller.signal })
+        fetch('api/autocomplete.php?' + parameters, { signal: controller.signal })
         .then(RES => RES.json())
         .then((newWhitelist) => {
             tagify.whitelist = newWhitelist.map((x) => x.keyword) // update inwhitelist Array in-place
             tagify.loading(false).dropdown.show(value) // render the suggestions dropdown
+        })
+        .catch(e => {
+            if (e.name !== 'AbortError')  console.log("error")
         })
     }
 }
