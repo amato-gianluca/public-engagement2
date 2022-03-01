@@ -616,10 +616,10 @@ function pe_researchers_search(string $search): array {
     $query = $pe -> prepare(<<<SQL
         SELECT
           username,
-          MATCH (keywords_en,interests_en,demerging_en,position_en,awards_en,curriculum_en,keywords_it,interests_it,demerging_it,position_it,awards_it,curriculum_it)
+          MATCH (keywords_en,interests_en,demerging_en,awards_en,curriculum_en,keywords_it,interests_it,demerging_it,awards_it,curriculum_it)
                 AGAINST (? IN NATURAL LANGUAGE MODE) AS score
         FROM researchers
-        WHERE MATCH (keywords_en,interests_en,demerging_en,position_en,awards_en,curriculum_en,keywords_it,interests_it,demerging_it,position_it,awards_it,curriculum_it)
+        WHERE MATCH (keywords_en,interests_en,demerging_en,awards_en,curriculum_en,keywords_it,interests_it,demerging_it,awards_it,curriculum_it)
               AGAINST (? IN NATURAL LANGUAGE MODE)
         ORDER BY score DESC
     SQL);
