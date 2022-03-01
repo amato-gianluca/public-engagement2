@@ -57,9 +57,9 @@ require_once 'templates/header.php';
                     unset($_SESSION['flash']);
                 } ?>
 
-                <form action="edit.php" method="POST">
+                <form action="" method="POST">
 
-                <div class="row">
+                <div class="row mb-3">
                     <div class="col-md-8">
                         <span class="lead"><?= h($esse3_displayname) ?> </span>
                         <br>
@@ -72,105 +72,109 @@ require_once 'templates/header.php';
                         </div>
                     </div>
                 </div>
-                <div class="row">
-                    <table class="table table-borderless researchertable">
-                        <thead>
-                            <tr>
-                                <th scope="col" class="legend" style="width: 30%"></th>
-                                <th scope="col" class="content" style="width: 35%">english</th>
-                                <th scope="col" class="content" style="width: 35%">italiano</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <th scope="row">
-                                    <span class="rowtitle">Research Keywords</span><br>
-                                    <span lang="it">(ogni keyword, singola o composta, va separata dalle altre usando il punto e virgola)</span>
-                                </th>
-                                <td>
-                                    <input type="text" id="keywords_en" name="keywords_en" lang="en" title="keywords in english" value="<?= h(list_to_tagify($pe_user['keywords_en'])) ?>">
-                                </td>
-                                <td>
+                <ul class="nav nav-tabs" id="keywords-tab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="it-tab" data-bs-toggle="tab" data-bs-target="#it-container" type="button" role="tab" aria-controls="it-container" aria-selected="true">
+                            <img src="images/itflag.png"> Italiano
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="en-tab" data-bs-toggle="tab" data-bs-target="#en-container" type="button" role="tab" aria-controls="en-container" aria-selected="true">
+                            <img src="images/gbflag.png"> English
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="papers-tab" data-bs-toggle="tab" data-bs-target="#papers-container" type="button" role="tab" aria-controls="papers-container" aria-selected="false">
+                            Prodotti della ricerca
+                        </button>
+                    </li>
+                </ul>
+
+                <div class="tab-content" id="keywords-tabcontent">
+                    <div class="tab-pane fade show active" id="it-container" role="tabpanel" aria-labelledby="it-tab">
+                        <div class="card mb-1">
+                            <div class="card-body">
+                                <h5 class="card-title">Parole chiavi</h5>
+                                <p class="card-text">
                                     <input type="text" id="keywords_it" name="keywords_it" lang="it" title="parole chiavi in italiano" value="<?= h(list_to_tagify($pe_user['keywords_it'])) ?>">
-                                </td>
-                            </tr>
-                            <tr>
-                                <th scope="row">
-                                    <span class="rowtitle">Research Interests and Expertise</span><br>
-                                </th>
-                                <td>
-                                    <textarea id="interests_en" name="interests_en" lang="en" rows="5"><?= h($pe_user['interests_en']) ?></textarea>
-                                </td>
-                                <td>
-                                    <textarea id="interests_it" name="interests_it" lang="it"rows="5"><?= h($pe_user['interests_it']) ?></textarea>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th scope="row">
-                                    <span class="rowtitle">Demerging (spin off) and Patents</span><br>
-                                </th>
-                                <td>
-                                    <textarea id="demerging_en" name="demerging_en" lang="en" rows="5"><?= h($pe_user['demerging_en']) ?></textarea>
-                                </td>
-                                <td>
-                                    <textarea id="demerging_it" name="demerging_it" lang="it" rows="5"><?= h($pe_user['demerging_it']) ?></textarea>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th scope="row">
-                                    <span class="rowtitle">Acadmic Honorary Assignments and Awards</span>
-                                </th>
-                                <td>
-                                    <textarea id="awards_en" name="awards_en" lang="en" rows="5"><?= h($pe_user['awards_en']) ?></textarea>
-                                </td>
-                                <td>
-                                    <textarea id="awards_it" name="awards_it" lang="it" rows="5"><?= h($pe_user['awards_it']) ?></textarea>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th scope="row">
-                                    <span class="rowtitle">Short Curriculum Vitae</span>
-                                </th>
-                                <td>
-                                    <textarea id="curriculum_en" name="curriculum_en" lang="en" rows="5"><?= h($pe_user['curriculum_en']) ?></textarea>
-                                </td>
-                                <td>
-                                    <textarea id="curriculum_it" name="curriculum_it" lang="it" rows="5"><?= h($pe_user['curriculum_it']) ?></textarea>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th scope="row">
-                                    <span class="rowtitle">Curriculum in PDF</span>
-                                </th>
-                                <td class="align-middle" style="text-align: center; padding: 5px;">
-                                    <?php if ($esse3_cv['CV_EN_URL']) { ?>
-                                        <a href="<?= h($esse3_cv['CV_EN_URL']) ?>" class="btn-secondary btn" target="_blank" lang="en">Download english curriculum</a>
-                                    <?php } ?>
-                                </td>
-                                <td class="align-middle" style="text-align: center; padding: 5px;">
-                                    <?php if ($esse3_cv['CV_IT_URL']) { ?>
-                                        <a href="<?= h($esse3_cv['CV_IT_URL']) ?>" class="btn-secondary btn" target="_blank" lang="it">Scarica curriculum in italiano</a>
-                                    <?php } ?>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td colspan="3"></td>
-                            </tr>
-                            <tr>
-                                <th scope="row">
-                                    <span class="rowtitle" lang="en">Publications last 5 years</span>
-                                </th>
-                                <td colspan="2">
-                                    <ul class="list-group">
-                                        <?php foreach ($iris_papers as $paper) { ?>
-                                            <li class="list-group-item"><?php iris_item_display($paper) ?></li>
-                                        <?php } ?>
-                                    </ul>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
+                                 </p>
+                            </div>
+                        </div>
+                        <div class="card mb-1">
+                            <div class="card-body">
+                                <h5 class="card-title">Interessi</h5>
+                                <p class="card-text"><textarea id="interests_it" name="interests_it" lang="it" rows="5"><?= h($pe_user['interests_it']) ?></textarea></p>
+                            </div>
+                        </div>
+                        <div class="card mb-1">
+                            <div class="card-body">
+                                <h5 class="card-title">Spin-off e brevetti</h5>
+                                <p class="card-text"><textarea id="demerging_it" name="demerging_it" lang="it" rows="5"><?= h($pe_user['demerging_it']) ?></textarea></p>
+                            </div>
+                        </div>
+                        <div class="card mb-1">
+                            <div class="card-body">
+                                <h5 class="card-title">Premi e onorificenze</h5>
+                                <p class="card-text"><textarea id="awards_it" name="awards_it" lang="it" rows="5"><?= h($pe_user['awards_it']) ?></textarea></p>
+                            </div>
+                        </div>
+                        <div class="card mb-1">
+                            <div class="card-body">
+                                <h5 class="card-title">Curriculum</h5>
+                                <p class="card-text"><textarea id="curriculum_it" name="curriculum_it" lang="it" rows="5"><?= h($pe_user['curriculum_it']) ?></textarea></p>
+                                <?php if ($esse3_cv['CV_IT_URL']) { ?>
+                                <a href="<?= h($esse3_cv['CV_IT_URL']) ?>" class="card-link" target="_blank">Scarica curriculum completo</a>
+                                <?php } ?>
+                            </div>
+                        </div>
                     </div>
+                    <div class="tab-pane fade" id="en-container" role="tabpanel" aria-labelledby="en-tab">
+                        <div class="card mb-1">
+                            <div class="card-body">
+                                <h5 class="card-title">Research Keywords</h5>
+                                <p class="card-text">
+                                    <input type="text" id="keywords_en" name="keywords_en" lang="en " title="keywords in english" value="<?= h(list_to_tagify($pe_user['keywords_en'])) ?>">
+                                </p>
+                            </div>
+                        </div>
+                        <div class="card mb-1">
+                            <div class="card-body">
+                                <h5 class="card-title">Research Interests and Expertise</h5>
+                                <p class="card-text"><textarea id="interests_en" name="interests_en" lang="en" rows="5"><?= h($pe_user['interests_en']) ?></textarea></p>
+                            </div>
+                        </div>
+                        <div class="card mb-1">
+                            <div class="card-body">
+                                <h5 class="card-title">Spin-off &amp; patents</h5>
+                                <p class="card-text"><textarea id="demerging_en" name="demerging_en" lang="en" rows="5"><?= h($pe_user['demerging_en']) ?></textarea></p>
+                            </div>
+                        </div>
+                        <div class="card mb-1">
+                            <div class="card-body">
+                                <h5 class="card-title">Acadmic Honorary Assignments and Awards</h5>
+                                <p class="card-text"><textarea id="awards_en" name="awards_en" lang="en" rows="5"><?= h($pe_user['awards_en']) ?></textarea></p>
+                            </div>
+                        </div>
+                        <div class="card mb-1">
+                            <div class="card-body">
+                                <h5 class="card-title">Curriculum</h5>
+                                <p class="card-text"><textarea id="curriculum_en" name="curriculum_en" lang="en" rows="5"><?= h($pe_user['curriculum_en']) ?></textarea></p>
+                                <?php if ($esse3_cv['CV_EN_URL']) { ?>
+                                <a href="<?= h($esse3_cv['CV_EN_URL']) ?>" class="card-link" target="_blank">Download full curriculum</a>
+                                <?php } ?>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="papers-container" role="tabpanel" aria-labelledby="papers-tab">
+                        <ul class="list-group">
+                        <?php foreach ($iris_papers as $paper) { ?>
+                            <li class="list-group-item">
+                                <?php iris_item_display($paper) ?>
+                            </li>
+                        <?php } ?>
+                        </ul>
+                    </div>
+                </div>
                 </form>
 
                 <script src="js/edit.js"></script>

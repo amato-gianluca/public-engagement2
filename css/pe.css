@@ -21,6 +21,11 @@
   min-height: 100%;
 }
 
+textarea {
+  width: 100%;
+}
+
+
 .brand-text {
   font-size: 12px;
   font-family: 'Montserrat', sans-serif !important;

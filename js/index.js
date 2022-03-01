@@ -41,7 +41,7 @@ async function searchterms_update() {
     } else {
         researchers_list.innerHTML = '<div class="alert alert-dark" role="alert">Nessun risultato trovato</div>'
     }
-    window.history.replaceState({ "search": search, "keywords": tagify_keywords_field.value }, '')
+    history.replaceState({ "search": search, "keywords": tagify_keywords_field.value }, '')
 }
 
 ready(function() {
@@ -49,10 +49,10 @@ ready(function() {
     keywords_field = document.getElementById('keywords')
     tagify_keywords_field = new Tagify(keywords_field)
 
-    const history = window.history.state
-    if (history) {
-        search_field.value = history.search
-        tagify_keywords_field.addTags(history.keywords)
+    const history_state = history.state
+    if (history_state) {
+        search_field.value = history_state.search
+        tagify_keywords_field.addTags(history_state.keywords)
     }
 
     search_field.addEventListener('input',search_change_listener)
