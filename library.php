@@ -205,11 +205,11 @@ function esse3_displayname_from_matricola(string $matricola): ?string {
  *
  * @param matricola matricola number
  */
-function esse3_cv_from_matricola(string $matricola): ?array {
+function esse3_cv_from_matricola(string $matricola): array|bool {
     global $esse3;
 
     $query = $esse3 -> prepare('SELECT * FROM CV_PERSONE WHERE MATRICOLA = ?');
-    $result = $query -> execute([$matricola]);
+    $query -> execute([$matricola]);
     return $query->fetch();
 }
 
@@ -219,7 +219,7 @@ function esse3_cv_from_matricola(string $matricola): ?array {
  * @param matricola matricola number
  * @todo use the correct table in ESSE3 for this query
  */
-function esse3_role_from_matricola(string $matricola): ?array {
+function esse3_role_from_matricola(string $matricola): array|bool {
     global $esse3;
 
     $query = $esse3 -> prepare('SELECT * FROM V_IE_RU_PERS_ATTIVO WHERE MATRICOLA = ?');
@@ -487,10 +487,11 @@ function pe_researchers_from_keywords(array $keywords): array {
  * Creates a blank researcher with a given username. Returns the result of the operation
  * Returns true on success or false on failure. k.keyword MEMBER OF ('[ "artificial intelligence" ]')
  */
-function pe_researcher_create(string $username): bool {
+function pe_researcher_create(string $username): ?int {
     global $pe;
     $query = $pe -> prepare('INSERT INTO researchers (username) VALUES (?)');
-    return $query -> execute([$username]);
+    $result = $query -> execute([$username]);
+    return $result ? $pe -> lastInsertId() : null;
 }
 
 /**

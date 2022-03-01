@@ -10,11 +10,14 @@ $userid = pe_id_from_username($_SESSION['username']);
 if (! $userid) {
   if (isset($_GET['accept'])) {
       $userid = pe_researcher_create($_SESSION['username']);
+      if (! $userid)
+        trigger_error('Errore durantre la creazione di un utente');
   } elseif (isset($_GET['reject'])) {
       unset($_SESSION['username']);
       redirect_browser('.');
   }
 }
+
 
 if ($userid) {
     unset($_SESSION['username']);
@@ -22,6 +25,7 @@ if ($userid) {
     $target = ($_GET['tgt'] ?? '') == 'edit' ? 'edit.php' : '.';
     redirect_browser($target);
 }
+
 
 require_once 'templates/header.php';
 ?>
@@ -187,6 +191,7 @@ require_once 'templates/header.php';
                         <div class="col-auto">
                             <button type="submit"  name="reject" class="btn btn-primary">Rifiuta</button>
                         </div>
+                        <input type="hidden" name="tgt" value="<?= $_GET['tgt'] ?? ''?>">
                     </div>
                 </form>
 <?php

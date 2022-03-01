@@ -63,7 +63,7 @@ require_once 'templates/header.php';
                     <div class="col-md-8">
                         <span class="lead"><?= h($esse3_displayname) ?> </span>
                         <br>
-                        <?= h($esse3_role['DS_RUOLO']) ?>
+                        <?= $esse3_role ? h($esse3_role['DS_RUOLO']) : '' ?>
                     </div>
                     <div class="col-md-4 text-end">
                         <div class="form-group">
@@ -122,7 +122,7 @@ require_once 'templates/header.php';
                             <div class="card-body">
                                 <h5 class="card-title">Curriculum</h5>
                                 <p class="card-text"><textarea id="curriculum_it" name="curriculum_it" lang="it" rows="5"><?= h($pe_user['curriculum_it']) ?></textarea></p>
-                                <?php if ($esse3_cv['CV_IT_URL']) { ?>
+                                <?php if ($esse3_cv && $esse3_cv['CV_IT_URL']) { ?>
                                 <a href="<?= h($esse3_cv['CV_IT_URL']) ?>" class="card-link" target="_blank">Scarica curriculum completo</a>
                                 <?php } ?>
                             </div>
@@ -159,7 +159,7 @@ require_once 'templates/header.php';
                             <div class="card-body">
                                 <h5 class="card-title">Curriculum</h5>
                                 <p class="card-text"><textarea id="curriculum_en" name="curriculum_en" lang="en" rows="5"><?= h($pe_user['curriculum_en']) ?></textarea></p>
-                                <?php if ($esse3_cv['CV_EN_URL']) { ?>
+                                <?php if ($esse3_cv && $esse3_cv['CV_EN_URL']) { ?>
                                 <a href="<?= h($esse3_cv['CV_EN_URL']) ?>" class="card-link" target="_blank">Download full curriculum</a>
                                 <?php } ?>
                             </div>
