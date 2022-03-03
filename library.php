@@ -184,17 +184,47 @@ function get_config($name): string {
 }
 
 /**
+ * Returns whether the given matricola is valid for searches and login.
+ *
+ * @param matricola matricola number
+ * @todo find the correct ESSE3 query
+ */
+function esse3_user_allowed(string $matricola): bool {
+    global $esse3;
+    $dip_id = get_config('DEPARTMENT_CODE');
+    if ($dip_id != 'all') {
+        $query = $esse3 -> prepare(<<<SQL
+            SELECT 1
+            FROM V_IE_RU_PERS_ATTIVO
+            WHERE MATRICOLA = ? AND CD_AFF_ORG = ?
+        SQL);
+        $query -> execute([$matricola, $dip_id]);
+    } else {
+        $query = $esse3 -> prepare(<<<SQL
+            SELECT 1
+            FROM V_IE_RU_PERS_ATTIVO
+            WHERE MATRICOLA = ?
+        SQL);
+        $query -> execute([$matricola]);
+    }
+    return boolval($query -> fetch());
+}
+
+/**
  * Returns the full name of a person, as recorded in ESSE3, given its matricola number. If the matricola
  * number does not exists, or does not correspond to an internal staff member of the university, this
  * function should return null.
  *
  * @param matricola matricola number
- * @todo find for the correct ESSE3 query
+ * @todo find the correct ESSE3 query
  */
 function esse3_displayname_from_matricola(string $matricola): ?string {
     global $esse3;
-
-    $query = $esse3 -> prepare('SELECT CONCAT(NOME, " ", COGNOME) AS name FROM DOCENTI WHERE MATRICOLA = ?');
+    $query = $esse3 -> prepare(<<<SQL
+        SELECT CONCAT(NOME, " ", COGNOME) AS name
+        FROM V_IE_RU_PERS_ATTIVO
+        WHERE MATRICOLA = ?
+    SQL);
     $query -> execute([$matricola]);
     $result = $query -> fetch();
     return $result ? $result['name'] :  null;
@@ -205,9 +235,8 @@ function esse3_displayname_from_matricola(string $matricola): ?string {
  *
  * @param matricola matricola number
  */
-function esse3_cv_from_matricola(string $matricola): array|bool {
+function esse3_cv_from_matricola(string $matricola): array | bool {
     global $esse3;
-
     $query = $esse3 -> prepare('SELECT * FROM CV_PERSONE WHERE MATRICOLA = ?');
     $query -> execute([$matricola]);
     return $query->fetch();
@@ -219,7 +248,7 @@ function esse3_cv_from_matricola(string $matricola): array|bool {
  * @param matricola matricola number
  * @todo use the correct table in ESSE3 for this query
  */
-function esse3_role_from_matricola(string $matricola): array|bool {
+function esse3_role_from_matricola(string $matricola): array | bool {
     global $esse3;
 
     $query = $esse3 -> prepare('SELECT * FROM V_IE_RU_PERS_ATTIVO WHERE MATRICOLA = ?');
@@ -642,6 +671,7 @@ function pe_researchers_search(string $search): array {
  */
 function search(string $search, array $keywords, int $start=0, int $limit=20): array {
     $authors = [];
+    $results_mode = get_config('SEARCH_RESULTS_MODE');
 
     $iris_authors = iris_authors_search($search);
     foreach ($iris_authors as $iris_author) {
@@ -669,6 +699,8 @@ function search(string $search, array $keywords, int $start=0, int $limit=20): a
     $real_results = [];
     $i = 0;
     foreach ($authors as &$author) {
+        if ($results_mode == 'registered' && ! pe_id_from_username($author['matricola'])) continue;
+        if ($results_mode == 'department' && ! esse3_user_allowed($author['matricola'])) continue;
         $author['name'] = esse3_displayname_from_matricola($author['matricola']);
         if (! $author['name']) continue;
         $i += 1;

@@ -2,13 +2,21 @@
 require_once 'library.php';
 
 if (isset($_SERVER['uid']) && $_SERVER['uid'] != get_config('ADMIN_USERNAME')) {
-  $_SESSION['username'] = $_SERVER['uid'];
-  redirect_browser('checkuser.php?tgt='.urlencode($_GET['tgt']));
+  if (esse3_user_allowed($_SESSION['username'])) {
+    $_SESSION['username'] = $_SERVER['uid'];
+    redirect_browser('checkuser.php?tgt='.urlencode($_GET['tgt']));
+  } else {
+    $_SESSION['flash'] = 'Non sei autorizzato ad accedere a questo sito';
+  }
 }
 
 if (isset($_GET['username'])) {
-  $_SESSION['username'] = $_GET['username'];
-  redirect_browser('checkuser.php?tgt='.urlencode($_GET['tgt']));
+  if (esse3_user_allowed($_GET['username'])) {
+    $_SESSION['username'] = $_GET['username'];
+    redirect_browser('checkuser.php?tgt='.urlencode($_GET['tgt']));
+  } else {
+    $_SESSION['flash'] = 'Non sei autorizzato ad accedere a questo sito';
+  }
 }
 
 require_once 'templates/header.php';
@@ -16,6 +24,14 @@ require_once 'templates/header.php';
                 <div class="mb-5">
                     <h2 class="text-center">Login</h2>
                 </div>
+
+                <?php if (isset($_SESSION['flash'])) { ?>
+                    <div id="success-alert" class="alert alert-primary" role="alert">
+                    <strong><?= $_SESSION['flash'] ?>
+                    </div>
+                    <?php
+                    unset($_SESSION['flash']);
+                } ?>
 
                 <form action="<?= $_SERVER['PHP_SELF'] ?>">
                     <div class="mb-3">

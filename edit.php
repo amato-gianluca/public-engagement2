@@ -44,7 +44,6 @@ if (! $pe_user) {
 
 require_once 'templates/header.php';
 ?>
-
                 <div class="mb-5">
                     <h2 class="text-center">Modifica competenze</h2>
                 </div>
