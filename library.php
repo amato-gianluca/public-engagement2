@@ -323,10 +323,17 @@ function iris_item_display(MongoDB\Model\BSONDocument $item, ?array $parsed_sear
     </a>
     <?php } ?>
     <br>
-    <?php if ($item['collection']['id']== 23) { ?>
-        in <?= h($l['book']) ?><br>
-    <?php } ?>
-    <?= h($l['year']) ?>
+    <?php
+    if (isset($l['book'])) echo "in ", h($l['book']), '<br>';
+    $title = $l['jtitle'] ?? $l['stitle'] ?? null;
+    if ($title) {
+        echo h($title);
+        if (isset($l['volume'])) echo ' ', h($l['volume'] ?? '');
+        if (isset($l['issue'])) echo ' (', h($l['issue']), ')';
+        echo '<br>';
+    }
+    ?>
+    <?= h($l['year']) ?? '' ?>
     <?php
     $abstract = $item['metadata']['dc/description/abstract'][0]['value'] ?? '';
     if ($abstract) {
