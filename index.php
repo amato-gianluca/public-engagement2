@@ -1,6 +1,13 @@
 <?php
 require_once 'library.php';
 require_once 'templates/header.php';
+
+$start = intval($_GET['start'] ?? '');
+$limit = intval($_GET['limit'] ?? '');
+if ($start <= 0) $limit = 0;
+if ($limit <= 0) $limit = intval(get_config('DEFAULT_SEARCH_LIMIT'));
+$search = $_GET['search'] ?? '';
+$keywords = $_GET['keywords'] ?? '[]';
 ?>
                 <div class="mb-5">
                     <h2 class="text-center">Ricerca competenze</h2>
@@ -44,9 +51,33 @@ require_once 'templates/header.php';
 
                 <h3>Risultati</h3>
 
+                <nav class="navbar navbar-expand mb-3">
+                    <div>
+                        <ul class="navbar-nav ms-auto">
+                            <li class="page-item"><a id="search-left" class="page-link" aria-label="Precedente"><i class="fas fa-arrow-left"></i></a></li>
+                            <li class="page-item"><a class="page-link" href="#">1</a></li>
+                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+                            <li class="page-item"><a class="page-link" href="#">3</a></li>
+                            <li class="page-item"><a id="search-right" class="page-link"><i class="fas fa-arrow-right"></i></a></li>
+                            <span class="navbar-text px-3">Risultati visualizzati : <span id="search-start"></span> &ndash; <span id="search-end"></span></span>
+                        </ul>
+                    </div>
+                </nav>
+
                 <ul class="list-group" id='researchers_list'>
                 </ul>
 
+                <script>
+                    let start = <?= $start ?>;
+                    let page_size = <?= $limit ?>;
+                    let search = '<?= addslashes($search) ?>';
+                    let keywords;
+                    try {
+                        keywords = <?= $keywords ?>;
+                    } catch(e) {
+                        keywords = [];
+                    }
+                </script>
                 <script src="js/index.js"></script>
 <?php
 require_once("templates/footer.php");
