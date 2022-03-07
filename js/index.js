@@ -1,4 +1,5 @@
-let timer, search_field, keywords_field, tagify_keywords_field, search_left, search_right, search_current_page
+let timer, search_field, keywords_field, tagify_keywords_field
+let search_left, search_right, search_start, search_end, search_first
 
 function search_change_listener() {
     document.getElementById('researchers_list').innerHTML = `
@@ -60,19 +61,14 @@ ready(function() {
     search_field = document.getElementById('searchterms')
     keywords_field = document.getElementById('keywords')
     tagify_keywords_field = new Tagify(keywords_field)
+    search_first= document.getElementById('search-first')
     search_start = document.getElementById('search-start')
     search_end = document.getElementById('search-end')
     search_left = document.getElementById('search-left')
     search_right = document.getElementById('search-right')
 
-    /*
-    const history_state = history.state
-    if (history_state) {
-        search_field.value = history_state.search
-        tagify_keywords_field.addTags(history_state.keywords)
-    }*/
     search_field.value = search
-    console.log(keywords)
+    tagify_keywords_field.removeAllTags()
     tagify_keywords_field.addTags(keywords)
 
     search_field.addEventListener('input',
@@ -86,6 +82,12 @@ ready(function() {
     tagify_keywords_field.on('input', keywords_autocomplete())
 
     keywords_field.addEventListener('change',
+        (e) => {
+            start = 0
+            search_change_listener()
+        }
+    )
+    search_first.addEventListener('click',
         (e) => {
             start = 0
             search_change_listener()
