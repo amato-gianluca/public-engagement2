@@ -93,6 +93,7 @@
                             <li class="nav-item"><a class="nav-link" href="index.php">Home</a></li>
                             <li class="nav-item"><a class="nav-link" href="alphabetic.php">Indice parole chiave</a></li>
                             <li class="nav-item"><a class="nav-link" href="edit.php">Modifica competenze</a></li>
+                            <li class="nav-item"><a class="nav-link" href="credits.php">Credits</a></li>
                             <?php if (isset($_SESSION['userid'])) { ?>
                             <li class="nav-item"><a class="nav-link" href="logout.php">Logout</a></li>
                             <?php } ?>
