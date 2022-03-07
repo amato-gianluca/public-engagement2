@@ -26,8 +26,8 @@ async function searchterms_update() {
                     <div class="d-flex w-100 justify-content-between">`
             if ('crisId' in author)
                 newhtml += `<a href='view.php?crisId=${encodeHTML(encodeURIComponent(author.crisId))}&amp;search=${encodeHTML(encodeURIComponent(search))}'>`
-            else if ('matricola' in author)
-                newhtml += `<a href='view.php?matricola=${encodeHTML(encodeURIComponent(author.matricola))}&amp;search=${encodeHTML(encodeURIComponent(search))}'>`
+            else if ('idab' in author)
+                newhtml += `<a href='view.php?idab=${encodeHTML(encodeURIComponent(author.idab))}&amp;search=${encodeHTML(encodeURIComponent(search))}'>`
             else
                 newhtml += `<a href=''>`
             newhtml += `

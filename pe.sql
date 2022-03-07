@@ -7,7 +7,7 @@ CREATE TABLE `keywords` (
 
 CREATE TABLE `researchers` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
-  `username` char(6) NOT NULL UNIQUE,
+  `idab` bigint NOT NULL UNIQUE,
   `keywords_en` text NOT NULL DEFAULT '',
   `interests_en` text NOT NULL DEFAULT '',
   `demerging_en` text NOT NULL DEFAULT '',

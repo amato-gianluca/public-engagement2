@@ -184,102 +184,107 @@ function get_config($name): string {
 }
 
 /**
- * Returns whether the given matricola is valid for searches and login.
+ * Returns whether the given idab is valid for searches and login.
  *
- * @param matricola matricola number
- * @todo find the correct ESSE3 query
+ * @param idab idab number
  */
-function esse3_user_allowed(string $matricola): bool {
+function esse3_user_allowed(int $idab): bool {
     global $esse3;
     $dip_id = get_config('DEPARTMENT_CODE');
     if ($dip_id != 'all') {
         $query = $esse3 -> prepare(<<<SQL
             SELECT 1
             FROM V_IE_RU_PERS_ATTIVO
-            WHERE MATRICOLA = ? AND CD_AFF_ORG = ?
+            WHERE ID_AB = ? AND CD_AFF_ORG = ?
         SQL);
-        $query -> execute([$matricola, $dip_id]);
+        $query -> execute([$idab, $dip_id]);
     } else {
         $query = $esse3 -> prepare(<<<SQL
             SELECT 1
             FROM V_IE_RU_PERS_ATTIVO
-            WHERE MATRICOLA = ?
+            WHERE ID_AB = ?
         SQL);
-        $query -> execute([$matricola]);
+        $query -> execute([$idab]);
     }
     return boolval($query -> fetch());
 }
 
+function esse3_idab_from_matricola(string $matricola): ?int {
+    global $esse3;
+    $query = $esse3 -> prepare('SELECT ID_AB FROM V_IE_RU_PERS_ATTIVO WHERE MATRICOLA = ?');
+    $query -> execute([$matricola]);
+    $result = $query -> fetch();
+    return $result['ID_AB'] ?? null;
+}
+
 /**
- * Returns the full name of a person, as recorded in ESSE3, given its matricola number. If the matricola
+ * Returns the full name of a person, as recorded in ESSE3, given its idab number. If the idab
  * number does not exists, or does not correspond to an internal staff member of the university, this
  * function should return null.
  *
- * @param matricola matricola number
- * @todo find the correct ESSE3 query
+ * @param idab idab number
  */
-function esse3_displayname_from_matricola(string $matricola): ?string {
+function esse3_displayname_from_idab(int $idab): ?string {
     global $esse3;
     $query = $esse3 -> prepare(<<<SQL
         SELECT CONCAT(NOME, " ", COGNOME) AS name
         FROM V_IE_RU_PERS_ATTIVO
-        WHERE MATRICOLA = ?
+        WHERE ID_AB = ?
     SQL);
-    $query -> execute([$matricola]);
+    $query -> execute([$idab]);
     $result = $query -> fetch();
-    return $result ? $result['name'] :  null;
+    return $result['name'] ?? null;
 }
 
 /**
- * Returns the link to the CV of a person given its matricola number.
+ * Returns the link to the CV of a person given its idab number.
  *
- * @param matricola matricola number
+ * @param idab idab number
  */
-function esse3_cv_from_matricola(string $matricola): array | bool {
+function esse3_cv_from_idab(int $idab): array | bool {
     global $esse3;
-    $query = $esse3 -> prepare('SELECT * FROM CV_PERSONE WHERE MATRICOLA = ?');
-    $query -> execute([$matricola]);
+    $query = $esse3 -> prepare('SELECT * FROM CV_PERSONE WHERE ID_AB = ?');
+    $query -> execute([$idab]);
     return $query->fetch();
 }
 
 /**
- * Returns the role of a person given its matricola number.
+ * Returns the role of a person given its idab number.
  *
- * @param matricola matricola number
- * @todo use the correct table in ESSE3 for this query
+ * @param idab idab number
  */
-function esse3_role_from_matricola(string $matricola): array | bool {
+function esse3_role_from_idab(int $idab): array | bool {
     global $esse3;
 
-    $query = $esse3 -> prepare('SELECT * FROM V_IE_RU_PERS_ATTIVO WHERE MATRICOLA = ?');
-    $query -> execute([$matricola]);
+    $query = $esse3 -> prepare('SELECT * FROM V_IE_RU_PERS_ATTIVO WHERE ID_AB = ?');
+    $query -> execute([$idab]);
     return $query->fetch();
 }
 
 /**
- * Returns the matricola corresponding to a crisId (identifier for the author table in IRIS). If
- * the given crisId does not exists, or there is no corresponding matricola number, it returns null.
+ * Returns the idab corresponding to a crisId (identifier for the author table in IRIS). If
+ * the given crisId does not exists, or there is no corresponding idab number, it returns null.
  */
-function iris_matricola_from_crisid(string $crisId): ?string {
+function iris_idab_from_crisid(string $crisId): ?int {
     global $iris;
 
-    // sebbene anche il campo userSet.username contenga il numero di matricola, non è presente sempre
+    // sebbene il campo userSet.username contenga il numero di idab, non è presente sempre
     $author = $iris->authors->findOne(['crisId' => $crisId], ['projection' => ['gaSourceIdentifiers' => 1]]);
     foreach ($author['gaSourceIdentifiers'] as &$source) {
-        if ($source['sourceTable'] == "UGOV.CSA.PERSON")
-            return $source['sourceId'];
+        if ($source['sourceTable'] == "UGOV.AC.PERSON")
+            return intval($source['sourceId']);
     }
     return null;
 }
 
 /**
- * Returns the matricola crisId corresponding to a given matricola number. We assume that there there a single
- * author in iris for a given matricola number. If the given matricola numbers is not found in the author
+ * Returns the idab crisId corresponding to a given idab number. We assume that there there a single
+ * author in iris for a given idab number. If the given idab numbers is not found in the author
  * table of IRIS, it returns null.
  */
-function iris_crisid_from_matricola(string $matricola): ?string {
+function iris_crisid_from_idab(int $idab): ?string {
     global $iris;
-    $author = $iris->authors->findOne(['gaSourceIdentifiers.sourceId' => $matricola], ['projection' => ['crisId' => 1]]);
+    $author = $iris->authors->findOne(['gaSourceIdentifiers.sourceId' => strval($idab)], ['projection' => ['crisId' => 1]]);
     return $author ? $author['crisId'] : null;
 }
 
@@ -389,7 +394,7 @@ function iris_item_display(MongoDB\Model\BSONDocument $item, ?array $parsed_sear
 /**
  * Returns the authors of those items which satisfy the given full-text query. The score of each item
  * is computed, and each auhtor is assiged a score which is the sum of the scores of its papers. The
- * result is ordered by decenfing order of score and a matricola number is associated when available.
+ * result is ordered by decenfing order of score and a idab number is associated when available.
  */
 function iris_authors_search(string $query):  MongoDB\Driver\Cursor {
     global $iris;
@@ -423,7 +428,7 @@ function iris_authors_search(string $query):  MongoDB\Driver\Cursor {
                     '$unwind' => '$gaSourceIdentifiers'
                 ], [
                     '$match' => [
-                        'gaSourceIdentifiers.sourceTable' => 'UGOV.CSA.PERSON'
+                        'gaSourceIdentifiers.sourceTable' => 'UGOV.AC.PERSON'
                     ]
                 ]
             ]]
@@ -431,11 +436,11 @@ function iris_authors_search(string $query):  MongoDB\Driver\Cursor {
             '$project' => [
                 '_id' => 1,
                 'score' => 1,
-                'matricola' => [ '$first' => '$identifiers.gaSourceIdentifiers.sourceId' ]
+                'idab' => [ '$first' => '$identifiers.gaSourceIdentifiers.sourceId' ],
             ]
         ], [
             '$match' => [
-                'matricola' => [ '$exists' => true ]
+                'idab' => [ '$exists' => true ]
             ]
         ]
     ]);
@@ -443,14 +448,13 @@ function iris_authors_search(string $query):  MongoDB\Driver\Cursor {
 }
 
 /**
- * Returns the id of a researcher in the PE database given its Shibboleth username, null if
+ * Returns the id of a researcher in the PE database given its idab number, null if
  * such an researcher does not exists.
- * @todo in many places we assume the Shibboleth usernames are matricola numbers.
  */
-function pe_id_from_username(string $username): ?int {
+function pe_id_from_idab(int $idab): ?int {
     global $pe;
-    $query = $pe -> prepare('SELECT id FROM researchers WHERE username = ?');
-    $query -> execute([$username]);
+    $query = $pe -> prepare('SELECT id FROM researchers WHERE idab = ?');
+    $query -> execute([$idab]);
     $result = $query -> fetch();
     return $result ? $result['id'] : null;
 }
@@ -507,12 +511,12 @@ function pe_researchers_from_keywords(array $keywords): array {
     global $pe;
     $keywords_list = implode(',', $keywords);
     $query = $pe -> prepare(<<<SQL
-        SELECT r.username, COUNT(DISTINCT k.keyword) AS score
+        SELECT idab, COUNT(DISTINCT k.keyword) AS score
         FROM researchers r
         JOIN researcher_keywords rk ON r.id = rk.id_researcher
         JOIN keywords k ON k.id = rk.id_keyword
         WHERE FIND_IN_SET(k.keyword, ?)
-        GROUP BY r.username
+        GROUP BY idab
         ORDER BY score DESC
     SQL);
     $query -> execute([$keywords_list]);
@@ -520,13 +524,13 @@ function pe_researchers_from_keywords(array $keywords): array {
 }
 
 /**
- * Creates a blank researcher with a given username. Returns the result of the operation
+ * Creates a blank researcher with a given idab. Returns the result of the operation
  * Returns true on success or false on failure. k.keyword MEMBER OF ('[ "artificial intelligence" ]')
  */
-function pe_researcher_create(string $username): ?int {
+function pe_researcher_create(int $idab): ?int {
     global $pe;
-    $query = $pe -> prepare('INSERT INTO researchers (username) VALUES (?)');
-    $result = $query -> execute([$username]);
+    $query = $pe -> prepare('INSERT INTO researchers (idab) VALUES (?)');
+    $result = $query -> execute([$idab]);
     return $result ? $pe -> lastInsertId() : null;
 }
 
@@ -652,7 +656,7 @@ function pe_researchers_search(string $search): array {
 
     $query = $pe -> prepare(<<<SQL
         SELECT
-          username,
+          idab,
           MATCH (keywords_en,interests_en,demerging_en,awards_en,curriculum_en,keywords_it,interests_it,demerging_it,awards_it,curriculum_it)
                 AGAINST (? IN NATURAL LANGUAGE MODE) AS score
         FROM researchers
@@ -667,7 +671,7 @@ function pe_researchers_search(string $search): array {
 /**
  * This is the main search method of the software. Combines results of iris_authors_search, pe_researchers_search and
  * pe_researchers_from_keywords. Each result is an associative array with three members:
- * matricola (string), name (string) and score (double). Results are ordered decreseangly according to score.
+ * idab (int), name (string) and score (double). Results are ordered decreseangly according to score.
  */
 function search(string $search, array $keywords, int $start=0, int $limit=20): array {
     $authors = [];
@@ -675,20 +679,20 @@ function search(string $search, array $keywords, int $start=0, int $limit=20): a
 
     $iris_authors = iris_authors_search($search);
     foreach ($iris_authors as $iris_author) {
-        $matricola = $iris_author['matricola'];
-        if ($matricola) {
-            $authors[$matricola] = $iris_author;
+        $idab = $iris_author['idab'];
+        if ($idab) {
+            $authors[$idab] = $iris_author;
         }
     }
 
     $pe_authors = array_merge(pe_researchers_search($search), pe_researchers_from_keywords($keywords));
     foreach ($pe_authors as &$pe_author) {
-        $matricola = $pe_author['username'];
-        if (array_key_exists($matricola, $authors)) {
-            $authors[$matricola]['score'] += $pe_author['score'];
+        $idab = $pe_author['idab'];
+        if (array_key_exists($idab, $authors)) {
+            $authors[$idab]['score'] += $pe_author['score'];
         } else {
-            $authors[$matricola] = [
-                'matricola' => $matricola,
+            $authors[$idab] = [
+                'idab' => $idab,
                 'score' => doubleval($pe_author['score']),
             ];
         }
@@ -699,9 +703,9 @@ function search(string $search, array $keywords, int $start=0, int $limit=20): a
     $real_results = [];
     $i = 0;
     foreach ($authors as &$author) {
-        if ($results_mode == 'registered' && ! pe_id_from_username($author['matricola'])) continue;
-        if ($results_mode == 'department' && ! esse3_user_allowed($author['matricola'])) continue;
-        $author['name'] = esse3_displayname_from_matricola($author['matricola']);
+        if ($results_mode == 'registered' && ! pe_id_from_idab($author['idab'])) continue;
+        if ($results_mode == 'department' && ! esse3_user_allowed($author['idab'])) continue;
+        $author['name'] = esse3_displayname_from_idab($author['idab']);
         if (! $author['name']) continue;
         $i += 1;
         if ($i <= $start) continue;

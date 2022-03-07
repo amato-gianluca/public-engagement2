@@ -24,7 +24,7 @@ async function load_researchers(e) {
             researchers_list.innerHTML += `
                 <li class='list-group-item'>
                     <div class="d-flex w-100 justify-content-between">
-                    <a href='view.php?matricola=${encodeHTML(encodeURIComponent(author.matricola))}'>
+                    <a href='view.php?idab=${encodeHTML(encodeURIComponent(author.idab))}'>
                         ${encodeHTML(author.displayname)}
                     </a>
                     </div>

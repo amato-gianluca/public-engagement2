@@ -24,18 +24,18 @@ if (isset($_POST['edit'])) {
 
 $pe_user = pe_researcher_from_id($userid);
 
-$username = $pe_user['username'];
-$esse3_displayname = esse3_displayname_from_matricola($username);
-$esse3_cv = esse3_cv_from_matricola($username);
-$esse3_role = esse3_role_from_matricola($username);
+$idab = $pe_user['idab'];
+$esse3_displayname = esse3_displayname_from_idab($idab);
+$esse3_cv = esse3_cv_from_idab($idab);
+$esse3_role = esse3_role_from_idab($idab);
 
-$iris_username = iris_crisid_from_matricola($username);
-$iris_papers = iris_items_from_crisid($iris_username);
+$iris_idab = iris_crisid_from_idab($idab);
+$iris_papers = iris_items_from_crisid($iris_idab);
 
 if (! $pe_user) {
     // Here we need to ask the user if he want to be part of the site.
-    if (pe_researcher_create($username)) {
-        $pe_user = pe_researcher_from_id($username);
+    if (pe_researcher_create($idab)) {
+        $pe_user = pe_researcher_from_id($idab);
         if (! $pe_user) trigger_error('Problem creating new user #2');
     } else {
         trigger_error('Problem creating new user #1');

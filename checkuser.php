@@ -1,31 +1,29 @@
 <?php
 require_once 'library.php';
 
-if (!isset($_SESSION['username'])) {
+if (!isset($_SESSION['idab'])) {
     redirect_browser('login.php');
 }
 
-$userid = pe_id_from_username($_SESSION['username']);
+$userid = pe_id_from_idab($_SESSION['idab']);
 
 if (! $userid) {
   if (isset($_GET['accept'])) {
-      $userid = pe_researcher_create($_SESSION['username']);
+      $userid = pe_researcher_create($_SESSION['idab']);
       if (! $userid)
         trigger_error('Errore durantre la creazione di un utente');
   } elseif (isset($_GET['reject'])) {
-      unset($_SESSION['username']);
+      unset($_SESSION['idab']);
       redirect_browser('.');
   }
 }
 
-
 if ($userid) {
-    unset($_SESSION['username']);
+    unset($_SESSION['idab']);
     $_SESSION['userid'] = $userid;
     $target = ($_GET['tgt'] ?? '') == 'edit' ? 'edit.php' : '.';
     redirect_browser($target);
 }
-
 
 require_once 'templates/header.php';
 ?>

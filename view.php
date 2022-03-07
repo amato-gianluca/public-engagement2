@@ -3,19 +3,19 @@ require_once 'library.php';
 
 if (isset($_GET['crisId'])) {
     $iris_username = $_GET['crisId'];
-    $matricola = iris_matricola_from_crisid($iris_username);
-} else if (isset($_GET['matricola'])) {
-    $matricola = $_GET['matricola'];
-    $iris_username = iris_crisid_from_matricola($matricola);
+    $idab = iris_idab_from_crisid($iris_username);
+} else if (isset($_GET['idab'])) {
+    $idab = $_GET['idab'];
+    $iris_username = iris_crisid_from_idab($idab);
 } else {
     redirect_browser('.');
 }
 
-if ($matricola) {
-    $esse3_displayname = esse3_displayname_from_matricola($matricola);
-    $esse3_cv = esse3_cv_from_matricola($matricola);
-    $esse3_role = esse3_role_from_matricola($matricola);
-    $id = pe_id_from_username($matricola);
+if ($idab) {
+    $esse3_displayname = esse3_displayname_from_idab($idab);
+    $esse3_cv = esse3_cv_from_idab($idab);
+    $esse3_role = esse3_role_from_idab($idab);
+    $id = pe_id_from_idab($idab);
     if ($id)
         $pe_user = pe_researcher_from_id($id);
 }
