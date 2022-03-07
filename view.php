@@ -14,7 +14,7 @@ if (isset($_GET['crisId'])) {
 if ($idab) {
     $esse3_displayname = esse3_displayname_from_idab($idab);
     $esse3_cv = esse3_cv_from_idab($idab);
-    $esse3_role = esse3_role_from_idab($idab);
+    $esse3_data = esse3_personnel_from_idab($idab);
     $id = pe_id_from_idab($idab);
     if ($id)
         $pe_user = pe_researcher_from_id($id);
@@ -37,9 +37,13 @@ require_once 'templates/header.php';
                 </div>
 
                 <div class="col-md-12 mb-3">
-                    <span class="lead"><?= h($esse3_displayname) ?></span>
+                    <span class="lead"><a href="https://www.unich.it/ugov/person/<?= $idab ?>"><?= h($esse3_displayname) ?></a></span>
                     <br>
-                    <?= h($esse3_role['DS_RUOLO'] ?? '') ?>
+                    <?= h($esse3_data['DS_RUOLO'] ?? '') ?>
+                    <?= array_key_exists('DS_SSD', $esse3_data) ||  array_key_exists('CD_SSD', $esse3_data) ?
+                            'di ' . h($esse3_data['DS_SSD']) . ' (' . h($esse3_data['CD_SSD']) . ')' : '' ?>
+                    <br>
+                    <?= h($esse3_data['DS_AFF_ORG'] ?? '') ?>
                 </div>
 
                 <?php if ($id) { ?>

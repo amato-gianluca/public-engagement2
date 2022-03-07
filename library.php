@@ -253,7 +253,7 @@ function esse3_cv_from_idab(int $idab): array | bool {
  *
  * @param idab idab number
  */
-function esse3_role_from_idab(int $idab): array | bool {
+function esse3_personnel_from_idab(int $idab): array | bool {
     global $esse3;
 
     $query = $esse3 -> prepare('SELECT * FROM V_IE_RU_PERS_ATTIVO WHERE ID_AB = ?');
