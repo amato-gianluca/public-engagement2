@@ -45,7 +45,7 @@ $keywords = $_GET['keywords'] ?? ''
                     <label for="keywords" class="form-label">Ricerca di parole chiave</label>
                     <input type="text" class="form-control" id="keywords" aria-described-by="keywords_help">
                     <div id="keywords_help" class="form-text mb-3">
-                        Le parole chiave qua sopra verranno cercate nei dati inseriti in questa applicazione.
+                        Le parole chiave qua sopra verranno cercate esclusivamente tra quelle inserite dai docenti in questa applicazione.
                     </div>
                 </div>
 
