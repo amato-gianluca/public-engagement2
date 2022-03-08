@@ -733,7 +733,7 @@ function highlight_text(string $text, ?array $parsed): string {
     }
     if ($re == '') return $text;
     $matches = [];
-    preg_match_all('/'.$re.'/', $text, $matches, PREG_OFFSET_CAPTURE | PREG_PATTERN_ORDER);
+    preg_match_all('/'.$re.'/ui', $text, $matches, PREG_OFFSET_CAPTURE | PREG_PATTERN_ORDER);
     $full_matches = array_reverse($matches[0]);
     $result = $text;
     foreach ($full_matches as $match) {
