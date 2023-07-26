@@ -333,8 +333,6 @@ function iris_items_from_crisid_with_score(string $crisId, string $search, int $
  */
 function iris_item_display(MongoDB\Model\BSONDocument $item, ?array $parsed_search = null): void {
     $l = $item['lookupValues'];
-    $appeared = $item['collection']['id']== 23 ? "in {$l['book']}, " : '';
-    $authors = $item['metadata']['dc/authority/people'];
     $numauthor = 0;
     foreach ($item['metadata']['dc/authority/people'] as $author)  {
         if ($numauthor > 5) {
