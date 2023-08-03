@@ -1,4 +1,13 @@
 <?php
+if (file_exists(__DIR__ . '/config.php'))
+    require_once __DIR__ . '/config.php';
+
+require_once __DIR__ . '/vendor/autoload.php';
+
+if (defined('DSN_SENTRY')) {
+  \Sentry\init(['dsn' => DSN_SENTRY]);
+}
+
 set_error_handler('error_handler');
 set_exception_handler('exception_handler');
 error_reporting(E_ALL | E_STRICT);
@@ -7,10 +16,6 @@ ob_start();
 session_name('uda-competenze');
 session_start();
 
-if (file_exists(__DIR__ . '/config.php'))
-    require_once __DIR__ . '/config.php';
-
-require_once __DIR__ . '/vendor/autoload.php';
 
 // DB connections initialization
 

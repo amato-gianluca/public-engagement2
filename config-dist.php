@@ -36,4 +36,9 @@ define('DEPARTMENT_CODE', 'all');
  * If 'registered', only shows authors registered in this web site.
  */
 define('SEARCH_RESULTS_MODE', 'all');
+
+/**
+ * DSN for Sentry exception reporting
+ */
+define('DSN_SENTRY', '');
 ?>
