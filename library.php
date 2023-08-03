@@ -141,7 +141,7 @@ function exception_handler(Throwable $ex): void {
         <b>Uncaught exception</b>
         <pre><?= h($ex) ?></pre>
     <?php } else { ?>
-        Si è verificato un errore. Si prega di contattareontatta lo sviluppatore del sofware,
+        Si è verificato un errore. Si prega di contattare lo sviluppatore del sofware,
         <a href="<?= h(get_config('DEVELOPER_ADDRESS')) ?>"><?= h(get_config('DEVELOPER_NAME')) ?></a>.
     <?php }
     die();
