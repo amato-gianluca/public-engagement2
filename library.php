@@ -8,8 +8,8 @@ set_error_handler('error_handler');
 set_exception_handler('exception_handler');
 error_reporting(E_ALL | E_STRICT);
 
-if (defined('DSN_SENTRY') && get_config('ERROR_MODE') != 'debug') {
-   \Sentry\init(['dsn' => DSN_SENTRY]);
+if (get_config('DSN_SENTRY') && get_config('ERROR_MODE') != 'debug') {
+   \Sentry\init(['dsn' => get_config('DSN_SENTRY')]);
 }
 
 ob_start();
