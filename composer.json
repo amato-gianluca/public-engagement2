@@ -1,6 +1,6 @@
 {
     "require": {
-        "mongodb/mongodb": "^1.18",
+        "mongodb/mongodb": "^2.0",
         "sentry/sentry": "^4.7"
     },
     "config": {
